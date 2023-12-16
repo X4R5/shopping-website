@@ -1,0 +1,55 @@
+body {padding: 0;margin: 0;}
+.hb-colorful-line{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row}
+.hb-colorful-line>div{height:8px}.hb-colorful-line>div.hb-line-1{width:15%;background:#7723db}.hb-colorful-line>div.hb-line-2{width:15%;background:#49c7ed}.hb-colorful-line>div.hb-line-3{width:40%;background:#ff6000}.hb-colorful-line>div.hb-line-4{width:15%;background:#5d196a}.hb-colorful-line>div.hb-line-5{width:15%;background:#57b900}
+.logo-text{color:#FF6000; font-size: xx-large; font-weight: bolder;}
+
+.dropdown {
+    position: relative;
+}
+  
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+}
+  
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.horizontal-list {
+    display: flex;
+    justify-content: center;
+    margin-left:auto;
+    margin-right: auto;
+    background: transparent;
+}
+
+.horizontal-list .list-group-item {
+    flex-grow: 1;
+    border-right: 1px solid #ccc;
+    width: 150px;
+    border-bottom: none;
+    border-top: none;
+    border-left: none;
+    background: transparent;
+    border-radius: 0;
+    text-align: center;
+    padding: 10px;
+}
+.horizontal-list .list-group-item:hover a.nav-link {
+    color: #FF6000;
+}
+.horizontal-list .list-group-item:hover {
+    background-color: white;
+}
+.horizontal-list .list-group-item:last-child {
+    border-right: none;
+}
+
+.firsat-urunleri {
+    background: linear-gradient(to bottom, rgb(26, 0, 153), rgb(0, 139, 173));
+    width: 100%;
+}
