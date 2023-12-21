@@ -1,7 +1,23 @@
+@font-face {
+    font-family: 'Avenir';
+    src: url('../public/Font.otf') format('opentype');
+}
+
 body {padding: 0;margin: 0;}
 .hb-colorful-line{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row}
 .hb-colorful-line>div{height:8px}.hb-colorful-line>div.hb-line-1{width:15%;background:#7723db}.hb-colorful-line>div.hb-line-2{width:15%;background:#49c7ed}.hb-colorful-line>div.hb-line-3{width:40%;background:#ff6000}.hb-colorful-line>div.hb-line-4{width:15%;background:#5d196a}.hb-colorful-line>div.hb-line-5{width:15%;background:#57b900}
-.logo-text{color:#FF6000; font-size: xx-large; font-weight: bolder;}
+.logo-text{color:#FF6000; font-size: xx-large; font-weight: bolder;
+font-family: 'Avenir', sans-serif;
+}
+
+header {
+    font-family: 'Avenir', sans-serif;
+}
+
+.navbar {
+    font-family: 'Avenir', sans-serif;
+  }
+  
 
 .dropdown {
     position: relative;
@@ -48,8 +64,171 @@ body {padding: 0;margin: 0;}
 .horizontal-list .list-group-item:last-child {
     border-right: none;
 }
-
-.firsat-urunleri {
-    background: linear-gradient(to bottom, rgb(26, 0, 153), rgb(0, 139, 173));
+/* ProductCard için stil */
+.product-card {
+    width: 18rem;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Avenir', sans-serif; /* Global fontu burada kullanın */
+  }
+  
+  /* Ürün ismi için stil */
+  .product-title {
+    font-size: large;
+    font-weight: bold;
+  }
+  
+  /* Fiyat için stil */
+  .product-price {
+    color: red;
+    font-weight: bold;
+    text-decoration: line-through;
+  }
+  
+  /* Resim için stil */
+  .product-image {
+    width: 90%;
+    height: auto;
+  }
+  
+  /* Konteyner için stil */
+.discounted-products-container {
+    height: 520px;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom, rgb(26, 0, 153), rgb(0, 139, 173)); /* Arka plan rengini burada tanımlayın */
+  }
+  
+  /* Başlık için stil */
+  .discounted-products-heading {
+    color: white;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  
+  /* Carousel için stil */
+  .discounted-products-carousel {
     width: 100%;
-}
+  }
+
+  /* Ürünlerin kategorisi için konteyner stil */
+.products-category-container {
+    padding: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+  
+  /* Kategori başlığı için stil */
+  .category-title {
+    /* İhtiyaca göre stil tanımlamaları */
+  }
+  
+  /* 'Tümünü Gör' bağlantısı ve ok işareti için stil */
+  .view-all-link {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+  
+  .view-all-link a {
+    color: rgb(255, 96, 0);
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+  
+  .view-all-link .arrow {
+    color: rgb(255, 96, 0);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    margin-left: 5px;
+  }
+  
+  .view-all-link:hover {
+    transform: translateX(-5px);
+  }
+  
+  .view-all-link:hover .arrow {
+    opacity: 1;
+  }
+  
+  /* Ürün kartları için grid stil */
+  .product-grid-item {
+    padding-bottom: 4px;
+  }
+
+  .orange-text {
+    color: rgb(255, 96, 0);
+  }
+  
+/* Turuncu tema için buton stilleri */
+.btn-orange {
+    color: #fff; /* Yazı rengi beyaz */
+    background-color: #ff6000; /* Turuncu arka plan */
+    border-color: #ff6000; /* Turuncu kenarlık */
+  }
+  
+  /* Hover ve focus durumları için stiller */
+  .btn-orange:hover,
+  .btn-orange:focus,
+  .btn-orange:active {
+    color: #fff; /* Yazı rengi beyaz */
+    background-color: #e65c00; /* Koyu turuncu arka plan */
+    border-color: #cc5200; /* Koyu turuncu kenarlık */
+  }
+  
+  /* Buton aktif durumdayken (basılı tutulduğunda) stiller */
+  .btn-orange.active,
+  .btn-orange:active:focus,
+  .btn-orange:active:hover,
+  .btn-orange.active:hover,
+  .btn-orange.active:focus {
+    color: #fff; /* Yazı rengi beyaz */
+    background-color: #cc5200; /* Daha koyu turuncu arka plan */
+    border-color: #994d00; /* Daha koyu turuncu kenarlık */
+  }
+  
+  /* Buton disabled durumdayken stiller */
+  .btn-orange:disabled {
+    background-color: #ff6000; /* Turuncu arka plan */
+    border-color: #ff6000; /* Turuncu kenarlık */
+    opacity: 0.65; /* Opaklık */
+  }
+  
+  /* Turuncu çerçeveli butonlar için stil */
+.btn-orange-outline {
+    color: #ff6000; /* Yazı rengi turuncu */
+    background-color: transparent; /* Şeffaf arka plan */
+    border-color: #ff6000; /* Turuncu kenarlık */
+  }
+  
+  /* Hover ve focus durumları için */
+  .btn-orange-outline:hover,
+  .btn-orange-outline:focus,
+  .btn-orange-outline:active {
+    color: #fff; /* Yazı rengi beyaz */
+    background-color: #ff6000; /* Turuncu arka plan */
+    border-color: #ff6000; /* Turuncu kenarlık */
+  }
+  
+  /* Buton aktif durumdayken (basılı tutulduğunda) stiller */
+  .btn-orange-outline.active,
+  .btn-orange-outline:active:focus,
+  .btn-orange-outline:active:hover,
+  .btn-orange-outline.active:hover,
+  .btn-orange-outline.active:focus {
+    color: #fff; /* Yazı rengi beyaz */
+    background-color: #e65c00; /* Koyu turuncu arka plan */
+    border-color: #cc5200; /* Koyu turuncu kenarlık */
+  }
+  
+  /* Buton disabled durumdayken stiller */
+  .btn-orange-outline:disabled {
+    color: #ff6000; /* Turuncu yazı rengi */
+    border-color: #ff6000; /* Turuncu kenarlık */
+    opacity: 0.65; /* Opaklık */
+  }
+  
