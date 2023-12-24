@@ -1,32 +1,46 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Image, Button, ListGroup, Card, InputGroup, FormControl } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Image, Button, ListGroup, Card, InputGroup, FormControl, ButtonGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import ProductComment from '../components/ProductComment';
 import Navbar from '../components/Navbar';
 
 function ProductPage() {
-  const [quantity, setQuantity] = useState(1); // Ürün miktarı için state
-  const product = {
-    name: 'Xiaomi Mi Robot Vacuum Mop 2 Pro',
-    price: '8.999,00 TL',
-    discountPrice: '8.599,00 TL',
-    description: 'Akıllı Robot Süpürge - Siyah',
-    imageUrl: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-    rating: 4.7,
-    reviews: 1984,
-  };
+  const [quantity, setQuantity] = useState(1);
 
-  // Yıldızları render etmek için bir fonksiyon
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch('localhost:3001/api/products/1');
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const data = await response.json();
+        setProduct(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!product) return <div>Product not found!</div>;
+
   const renderStars = () => {
     let stars = [];
-    // Add full stars
     for (let i = 0; i < Math.floor(product.rating); i++) {
-      stars.push(<FontAwesomeIcon key={`full${i}`} icon={faStar} style={{ color: 'orange' }} />); // Correct usage
+      stars.push(<FontAwesomeIcon key={`full${i}`} icon={faStar} style={{ color: 'orange' }} />);
     }
-    // Add half star (if needed)
     if (product.rating % 1 >= 0.5) {
-      stars.push(<FontAwesomeIcon key="half" icon={faStarHalfAlt} style={{ color: 'orange' }} />); // Correct usage
+      stars.push(<FontAwesomeIcon key="half" icon={faStarHalfAlt} style={{ color: 'orange' }} />);
     }
     return stars;
   };
@@ -45,7 +59,7 @@ function ProductPage() {
         <Row>
           <Col lg={6}>
             {/* Ürün Resmi */}
-            <Image src={product.imageUrl} alt={product.name} fluid />
+            <Image src={product_image} alt={product.name} fluid />
           </Col>
           <Col lg={6} className="d-flex">
             {/* Ürün Bilgileri */}
@@ -53,7 +67,6 @@ function ProductPage() {
               <Card.Body className="d-flex flex-column justify-content-between">
                 <div>
                   <Card.Title>{product.name}</Card.Title>
-                  <Card.Text>{product.description}</Card.Text>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
                       <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.price}</span> <span className="text-success">{product.discountPrice}</span></h5>
@@ -86,15 +99,28 @@ function ProductPage() {
         </Row>
       </Container>
 
-      <ProductComment
-        user={{ name: 'Jane Doe', photo: '' }} // No photo provided, will use initials
-        rating={4.5}
-        comment="Very happy with the purchase!"
-        images={['https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png', 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png']}
-        date="01/01/2024"
-      />
+       <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
+          <Card.Body>
+            <Card.Title className='my-2'>Ürün Açıklaması</Card.Title>
+            <Card.Text className='my-3'>{product.product_desc}</Card.Text>
+          </Card.Body>
+        </Card>
 
-
+        <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
+        <Card.Body>
+            <Card.Title className='my-2'>Ürün Yorumları</Card.Title>
+          </Card.Body>
+        <ProductComment
+          user={{ name: 'huseyin ugur aydin', photo: '' }}
+          rating={4.5}
+          comment="cokiyi urun"
+          images={[
+            'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
+            'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png'
+          ]}
+          date="01/01/2024"
+        />
+        </Card>
     </>
   );
 }
