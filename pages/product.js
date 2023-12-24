@@ -16,10 +16,10 @@ function ProductPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch('localhost:3001/api/products/1');
+        const response = await fetch('http://localhost:3001/api/products/1');
         if (!response.ok) throw new Error('Network response was not ok.');
         const data = await response.json();
-        setProduct(data);
+        setProduct(data[0]);
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -59,22 +59,22 @@ function ProductPage() {
         <Row>
           <Col lg={6}>
             {/* Ürün Resmi */}
-            <Image src={product_image} alt={product.name} fluid />
+            <Image src={product.product_image} alt={product.product_name} fluid />
           </Col>
           <Col lg={6} className="d-flex">
             {/* Ürün Bilgileri */}
             <Card className="flex-grow-1 d-flex flex-column">
               <Card.Body className="d-flex flex-column justify-content-between">
                 <div>
-                  <Card.Title>{product.name}</Card.Title>
+                  <Card.Title>{product.product_name}</Card.Title>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
-                      <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.price}</span> <span className="text-success">{product.discountPrice}</span></h5>
+                      {/* <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.price}</span> <span className="text-success">{product.discountPrice}</span></h5> */}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
-                        <div className='mr-2'>{product.rating} {renderStars()}</div>
-                        <div className='mx-2'>{product.reviews} Değerlendirme</div>
+                        {/* <div className='mr-2'>{product.rating} {renderStars()}</div> */}
+                        {/* <div className='mx-2'>{product.reviews} Değerlendirme</div> */}
                       </div>
                   </ListGroup.Item>
                   </ListGroup>

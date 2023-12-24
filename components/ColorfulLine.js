@@ -2,7 +2,7 @@ import React from 'react';
 
 function ColorfulLine() {
   return (
-    <div class="hb-colorful-line"><div class="hb-line-3"></div><div class="hb-line-2"></div><div class="hb-line-1"></div><div class="hb-line-5"></div><div class="hb-line-4"></div></div>
+    <div className="hb-colorful-line"><div className="hb-line-3"></div><div className="hb-line-2"></div><div className="hb-line-1"></div><div className="hb-line-5"></div><div className="hb-line-4"></div></div>
   );
 }
 
