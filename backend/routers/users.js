@@ -1,0 +1,49 @@
+const {User} = require('../models/user');
+const express = require('express');
+const {connection} = require("../database");
+const router = express.Router();
+
+
+// GET endpoint to retrieve all users
+router.get("/", (req, res) => {
+    User.getAllUsers(connection, (result) => {
+        res.json(result);
+    });
+});
+
+// GET endpoint to retrieve user by id
+router.get("/:id", (req, res) => {
+    const id = req.params.id;
+    User.getUserById(connection, id, (result) => {
+        res.json(result);
+    });
+});
+
+// POST endpoint to add a new user
+router.post("/", (req, res) => {
+    const { name, email , password} = req.body;
+
+    User.addUser(connection, name, email, password, (result) => {
+        res.json(result);
+    });
+});
+
+// PUT endpoint to update user by id
+router.put("/:id", (req, res) => {
+    const id = req.params.id;
+    const { name, email , password} = req.body;
+
+    User.updateUserById(connection, id, name, email, password, (result) => {
+        res.json(result);
+    });
+});
+
+// DELETE endpoint to delete user by id
+router.delete("/:id", (req, res) => {
+    const id = req.params.id;
+    User.deleteUserById(connection, id, (result) => {
+        res.json(result);
+    });
+});
+
+module.exports = router;
