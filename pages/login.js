@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 
-function Login() {
+function LoginPage() {
   const [activeTab, setActiveTab] = useState('login');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');  
@@ -130,4 +130,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginPage;

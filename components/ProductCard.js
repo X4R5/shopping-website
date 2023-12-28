@@ -2,7 +2,7 @@ import React from 'react';
 
 function ProductCard() {
   return (
-    <div className="product-card mx-2 bg-light py-3">
+    <div className="product-card mx-2 bg-light py-3 my-3">
       <img
         src="https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png"
         className="product-image card-img-top mx-auto"

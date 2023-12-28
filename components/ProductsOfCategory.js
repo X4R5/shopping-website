@@ -20,9 +20,9 @@ function ProductsOfCategory({ categoryId = 0 }) {
           <span className="arrow">{'>'}</span>
         </div>
       </div>
-      <div className="my-3 row">
+      <div className="my-3 d-flex flex-row">
         {products.map((product) => (
-          <div className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 product-grid-item" key={product.id}>
+          <div className="mb-4 mx-2" key={product.id}>
             <ProductCard product={product} />
           </div>
         ))}

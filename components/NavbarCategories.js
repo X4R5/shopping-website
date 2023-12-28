@@ -12,49 +12,49 @@ function NavbarCategories() {
             <ul class="navbar-nav horizontal-list d-flex justify-content-center">
 
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Elektronik
                 </a>
               </li>
 
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Giyim
                 </a>
               </li>
               
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Kitap
                 </a>
               </li>
 
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Ofis
                 </a>
               </li>
 
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Oyuncak
                 </a>
               </li>
 
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Kişisel Bakım
                 </a>
               </li>
 
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Spor
                 </a>
               </li>
 
               <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link" href="#" role="button" >
                   Supermarket
                 </a>
               </li>

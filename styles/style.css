@@ -93,7 +93,8 @@ header {
   
   /* Konteyner için stil */
 .discounted-products-container {
-    height: 520px;
+    margin-top: 0;
+    height: 530px;
     width: auto;
     display: flex;
     flex-direction: column;

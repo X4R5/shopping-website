@@ -13,13 +13,38 @@ function ProductPage() {
   const [error, setError] = useState(null);
 
 
+
+  const product1 = {
+    product_name: 'Xiaomi Mi Robot Vacuum Mop 2 Pro',
+    price: '8.999,00 TL',
+    discountPrice: '8.599,00 TL',
+    product_desc: 'Akıllı Robot Süpürge - Siyah',
+    product_image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
+    rating: 4.7,
+    reviews: 1984,
+  };
+
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:3001/api/products/1');
+  //       if (!response.ok) throw new Error('Network response was not ok.');
+  //       const data = await response.json();
+  //       setProduct(data[0]);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       setError(error.message);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchProduct();
+  // }, []);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/products/1');
-        if (!response.ok) throw new Error('Network response was not ok.');
-        const data = await response.json();
-        setProduct(data[0]);
+        setProduct(product1);
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -69,7 +94,7 @@ function ProductPage() {
                   <Card.Title>{product.product_name}</Card.Title>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
-                      {/* <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.price}</span> <span className="text-success">{product.discountPrice}</span></h5> */}
+                      <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.price}</span> <span className="text-success">{product.discountPrice}</span></h5>
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
