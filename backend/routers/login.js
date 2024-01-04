@@ -17,8 +17,7 @@ router.post("/", (req, res) => {
                 // User is logged in
 
                 // Create token
-                const token = jwt.sign({id: user.UserId}, process.env.JWT_SECRET, {expiresIn: 86400});
-
+                const token = jwt.sign({id: user.UserId, isAdmin: user.isAdmin}, process.env.JWT_SECRET, {expiresIn: 86400});   
                 res.status(200).send({
                     user: user.email,
                     auth: true,

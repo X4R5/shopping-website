@@ -48,4 +48,11 @@ router.delete("/:id", (req, res) => {
     });
 });
 
+// GET endpoint to get userCount
+router.get("/getCount", (req, res) => {
+    User.getUserCount(connection, (result) => {
+        res.json(result);
+    });
+});
+
 module.exports = router;

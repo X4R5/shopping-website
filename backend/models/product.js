@@ -64,6 +64,14 @@ class Product {
             callback(result);
         });
     }
+
+    // get productCount
+    static getProductCount(connection, callback) {
+        connection.query("SELECT COUNT(*) AS productCount FROM products", (err, result) => {
+            if (err) throw err;
+            callback(result);
+        });
+    }
 }
 
 module.exports = Product;

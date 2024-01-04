@@ -46,4 +46,11 @@ router.delete('/:id', (req, res) => {
     });
 });
 
+// GET endpoint to get productCount
+router.get('/getCount', (req, res) => {
+    Product.getProductCount(connection, (result) => {
+        res.json(result);
+    });
+});
+
 module.exports = router;
