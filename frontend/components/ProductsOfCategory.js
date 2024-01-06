@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 
-function ProductsOfCategory({ categoryId = 0 }) {
-  const categoryTitle = "Kategori Adı";
+function ProductsOfCategory({ categoryId }) {
+  const [products, setProducts] = useState([]);
+  const [categoryTitle, setCategoryTitle] = useState('');
 
-  const products = [
-    { id: 1, name: 'Ürün 1', price: '50TL' },
-    { id: 2, name: 'Ürün 2', price: '60TL' },
-    { id: 3, name: 'Ürün 3', price: '70TL' },
-    { id: 4, name: 'Ürün 4', price: '80TL' },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/products/homepage/${categoryId}`);
+        const data = await response.json();
+        setProducts(data.products);
+        setCategoryTitle(data.categoryTitle);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, [categoryId]);
 
   return (
     <div className="my-5 container products-category-container">
@@ -23,7 +32,7 @@ function ProductsOfCategory({ categoryId = 0 }) {
       <div className="my-3 d-flex flex-row">
         {products.map((product) => (
           <div className="mb-4 mx-2" key={product.id}>
-            <ProductCard product={product} />
+            <ProductCard key={product.id} product={product} />
           </div>
         ))}
       </div>

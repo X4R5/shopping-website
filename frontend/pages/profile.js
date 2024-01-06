@@ -11,36 +11,90 @@ function ProfilePage() {
         password: '',    
       });
 
-      const order = {
-        id: '116643015',
-        date: '15 Kasım Çar, 15:32',
-        status: 'Sipariş Tamamlandı',
-        paymentMethod: 'Kredi Kartı',
-        totalPrice: 2.00,
-        products: [
-          {
-            id: 1,
-            name: 'iPhone 13 128 GB - Black',
-            price: 1.00,
-            image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-          },
-          {
-            id: 2,
-            name: 'Bosch Professional Screwdriver Bit Set 44+1 Piece - 2607017692',
-            price: 1.00,
-            image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-          },
-          {
-            id: 3,
-            name: 'Bosch Professional Screwdriver Bit Set 44+1 Piece - 2607017692',
-            price: 1.00,
-            image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-          }
-        ]
-      };
+      const [orders, setOrders] = useState([]);
     
     
       const [activeTab, setActiveTab] = useState('info');
+
+      useEffect(() => {
+        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+    
+        const fetchUserInfo = async () => {
+          // Kullanıcı bilgilerini çekmek için API isteği
+          try {
+            const response = await fetch('http://localhost:3001/api/user', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+            });
+            if (!response.ok) throw new Error('Kullanıcı bilgileri çekilemedi.');
+            const data = await response.json();
+            setUserInfo(data);
+          } catch (error) {
+            console.error('Kullanıcı bilgileri çekilirken hata oluştu:', error);
+          }
+        };
+    
+        const fetchOrders = async () => {
+          // Siparişleri çekmek için API isteği
+          try {
+            const response = await fetch('http://localhost:3001/api/orders', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+            });
+            if (!response.ok) throw new Error('Siparişler çekilemedi.');
+            const data = await response.json();
+            setOrders(data);
+          } catch (error) {
+            console.error('Siparişler çekilirken hata oluştu:', error);
+          }
+        };
+    
+        fetchUserInfo();
+        fetchOrders();
+      }, []);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault(); // Formun varsayılan gönderme davranışını engelle
+      
+        // Şifrelerin uyuşup uyuşmadığını kontrol et
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        if(password !== confirmPassword) {
+          alert("Şifreler uyuşmuyor!");
+          return;
+        }
+      
+        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+        const updatedUserInfo = {
+          name: userInfo.name,
+          email: userInfo.email,
+          password: password, // Yeni şifre (eğer girildiyse)
+        };
+      
+        try {
+          const response = await fetch('http://localhost:3001/api/user', {
+            method: 'PUT', // veya 'POST', API'nizin gerektirdiği yöntem
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUserInfo),
+          });
+      
+          if (!response.ok) throw new Error('Profil güncellenemedi.');
+      
+          const data = await response.json();
+          setUserInfo(data); // Kullanıcı bilgilerini güncelle
+          alert("Profil başarıyla güncellendi!"); // Başarılı güncelleme mesajı
+        } catch (error) {
+          console.error('Profil güncellenirken hata oluştu:', error);
+          alert("Profil güncellenirken bir hata oluştu."); // Hata mesajı
+        }
+      };
+      
+    
     
       const getInitials = (firstName, lastName) => {
         return `${firstName[0]}${lastName[0]}`;
@@ -49,7 +103,7 @@ function ProfilePage() {
       const renderProfilePicture = () => {
         return (
           <div className="profile-picture bg-primary rounded-circle text-white d-flex justify-content-center align-items-center" style={{ width: '80px', height: '80px', fontSize: '2em' }}>
-            {getInitials(userInfo.firstName, userInfo.lastName)}
+            {getInitials(userInfo.name)}
           </div>
         );
       };
@@ -82,14 +136,10 @@ function ProfilePage() {
           {activeTab === 'info' && (
             <div className="user-info">
                 <h3 className='mb-4'>Profil Bilgilerim</h3>
-                <form>
+                <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="firstName" className="form-label">İsim:</label>
-                    <input type="text" className="form-control" id="firstName" value={userInfo.firstName} onChange={(e) => setUserInfo({ ...userInfo, firstName: e.target.value })} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="lastName" className="form-label">Soyisim:</label>
-                    <input type="text" className="form-control" id="lastName" value={userInfo.lastName} onChange={(e) => setUserInfo({ ...userInfo, lastName: e.target.value })} />
+                    <input type="text" className="form-control" id="firstName" value={userInfo.name} onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email:</label>
@@ -105,13 +155,15 @@ function ProfilePage() {
                 </div>
                 <button type="submit" className="btn btn-orange">Profili Güncelle</button>
                 </form>
-            </div>          
+            </div>
           )}
 
         {activeTab === 'orders' && (
             <div className="user-orders">
                 <h3 className='mb-4'>Sipariş Geçmişim</h3>
-                <OrderCard order={order} />
+                {orders.map((order) => (
+                  <OrderCard key={order.id} order={order} />
+                ))}
             </div>
         )}
         </div>

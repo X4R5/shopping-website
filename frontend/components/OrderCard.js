@@ -22,9 +22,9 @@ function OrderCard({ order }) {
                      style={{
                        width: '60px', height: '60px', objectFit: 'cover',
                        position: 'relative',
-                       zIndex: index + 1, // Increase z-index for each image to stack correctly
+                       zIndex: index + 1, 
                        marginLeft: '-30px',
-                       border: '2px solid white' // Optional: to distinguish overlapping images
+                       border: '2px solid white'
                      }} />
               ))}
               {additionalProducts > 0 && (

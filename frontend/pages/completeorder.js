@@ -3,40 +3,7 @@ import Navbar from '@/components/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function OrderCompletionPage() {
-  const [basketItems] = useState([
-    {
-      id: 1,
-      name: 'iPhone 13 128 GB - Black',
-      price: 1.00,
-      image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-      seller: 'Hepsiburada',
-      quantity: 1
-    },
-    {
-      id: 2,
-      name: 'Bosch Professional Screwdriver Bit Set 44+1 Piece - 2607017692',
-      price: 1.00,
-      image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-      seller: 'Hepsiburada',
-      quantity: 1
-    },
-    {
-      id: 3,
-      name: 'Bosch Professional Screwdriver Bit Set 44+1 Piece - 2607017692',
-      price: 1.00,
-      image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-      seller: 'Hepsiburada',
-      quantity: 1
-    },
-    {
-      id: 4,
-      name: 'Bosch Professional Screwdriver Bit Set 44+1 Piece - 2607017692',
-      price: 1.00,
-      image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-      seller: 'Hepsiburada',
-      quantity: 1
-    }
-  ]);
+  const [basketItems, setBasketItems] = useState([]);
 
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
@@ -44,10 +11,63 @@ function OrderCompletionPage() {
   const [deliveryOption, setDeliveryOption] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
+  useEffect(() => {
+    const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+    const fetchBasketItems = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/cart', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) throw new Error('Sepet bilgileri çekilemedi.');
+        const data = await response.json();
+        setBasketItems(data);
+      } catch (error) {
+        console.error('Sepetteki ürünler çekilirken hata oluştu:', error);
+      }
+    };
 
-  const handlePurchase = () => {
-    console.log('Purchase made with address:', address, 'and payment method:', paymentMethod);
+    fetchBasketItems();
+  }, []);
+
+  const handlePurchase = async () => {
+    const token = localStorage.getItem('token');
+  
+    const orderDetails = {
+      items: basketItems,
+      address: {
+        city,
+        district,
+        detail: address,
+      },
+      deliveryOption,
+      paymentMethod,
+    };
+  
+    try {
+      const response = await fetch('http://localhost:3001/api/orders', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderDetails),
+      });
+  
+      if (!response.ok) throw new Error('Sipariş oluşturulamadı.');
+  
+      const result = await response.json();
+      console.log('Sipariş başarıyla oluşturuldu:', result);
+      alert("Sipariş başarıyla tamamlandı!");
+    } catch (error) {
+      console.error('Sipariş oluşturma sırasında hata oluştu:', error);
+      alert("Sipariş oluşturma sırasında bir hata oluştu.");
+    }
   };
+  
 
   const additionalProducts = basketItems.length > 2 ? basketItems.length - 2 : 0;
   const totalPrice = basketItems.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -84,7 +104,10 @@ function OrderCompletionPage() {
         <span className="mx-5 me-3">Toplam: {totalPrice.toFixed(2)} TL</span>
       </div>
 
-      <form onSubmit={handlePurchase} className="row g-5">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        handlePurchase();
+      }} className="row g-5">
 
         <div className="col-md-6">
           <h3>Teslimat adresi</h3>
@@ -110,12 +133,12 @@ function OrderCompletionPage() {
           <div className="mb-3">
             <div className="form-check">
               <input type="radio" id="deliveryDoor" name="deliveryOption" value="Door" className="form-check-input"
-                     checked={deliveryOption === 'Door'} onChange={(e) => setDeliveryOption(e.target.value)} />
+                     checked={deliveryOption === 'Adrese Teslim'} onChange={(e) => setDeliveryOption(e.target.value)} />
               <label className="form-check-label" htmlFor="deliveryDoor">Adrese Teslim</label>
             </div>
             <div className="form-check">
               <input type="radio" id="pickupStore" name="deliveryOption" value="Store" className="form-check-input"
-                     checked={deliveryOption === 'Store'} onChange={(e) => setDeliveryOption(e.target.value)} />
+                     checked={deliveryOption === 'Mağazadan Teslim'} onChange={(e) => setDeliveryOption(e.target.value)} />
               <label className="form-check-label" htmlFor="pickupStore">Mağazadan Teslim</label>
             </div>
           </div>
@@ -124,12 +147,12 @@ function OrderCompletionPage() {
           <div className="mb-3">
             <div className="form-check">
               <input type="radio" id="paymentOnline" name="paymentMethod" value="Online" className="form-check-input"
-                     checked={paymentMethod === 'Online'} onChange={(e) => setPaymentMethod(e.target.value)} />
+                     checked={paymentMethod === 'Online Kredi Kartı'} onChange={(e) => setPaymentMethod(e.target.value)} />
               <label className="form-check-label" htmlFor="paymentOnline">Online Kredi Kartı</label>
             </div>
             <div className="form-check">
               <input type="radio" id="paymentOnDelivery" name="paymentMethod" value="OnDelivery" className="form-check-input"
-                     checked={paymentMethod === 'OnDelivery'} onChange={(e) => setPaymentMethod(e.target.value)} />
+                     checked={paymentMethod === 'Kapıda Ödeme'} onChange={(e) => setPaymentMethod(e.target.value)} />
               <label className="form-check-label" htmlFor="paymentOnDelivery">Kapıda Ödeme</label>
             </div>
           </div>

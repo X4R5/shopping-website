@@ -4,28 +4,34 @@ import CartItem from '../components/CartItem';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function CartPage() {
-  const [basketItems, setBasketItems] = useState([
-    {
-      id: 1,
-      name: 'iPhone 13 128 GB - Black',
-      price: 1.00,
-      image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-      seller: 'Hepsiburada',
-      quantity: 1
-    },
-    {
-      id: 2,
-      name: 'Bosch Professional Screwdriver Bit Set 44+1 Piece - 2607017692',
-      price: 1.00,
-      image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-      seller: 'Hepsiburada',
-      quantity: 1
-    }
-  ]);
+  const [basketItems, setBasketItems] = useState([]);
 
   const total = basketItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = total > 50000 ? 0 : 29.90;
   const grandTotal = total + shipping;
+
+  useEffect(() => {
+    const fetchBasketItems = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch('http://localhost:3001/api/cart', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) throw new Error('Sepet bilgileri çekilemedi.');
+        const data = await response.json();
+        setBasketItems(data);
+      } catch (error) {
+        console.error('Sepetteki ürünler çekilirken hata oluştu:', error);
+      }
+    };
+
+    fetchBasketItems();
+  }, []);
+
 
   const handleIncrease = (id) => {
     const newBasketItems = basketItems.map(item => {
@@ -53,7 +59,7 @@ function CartPage() {
   };
 
   const clearCart = () => {
-    setBasketItems([]); // Sets the basketItems to an empty array
+    setBasketItems([]);
   };
 
   return (

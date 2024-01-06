@@ -1,36 +1,104 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { Container, Row, Col, Image, Button, ListGroup, Card, InputGroup, FormControl, ButtonGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
-import ProductComment from '../components/ProductComment';
-import Navbar from '../components/Navbar';
+import ProductComment from '../../components/ProductComment';
+import Navbar from '../../components/Navbar';
 
 function ProductPage() {
+  const router = useRouter();
+  const { id } = router.query; 
+
   const [quantity, setQuantity] = useState(1);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
 
 
+  // const product1 = {
+  //   product_name: 'Xiaomi Mi Robot Vacuum Mop 2 Pro',
+  //   price: '8.999,00 TL',
+  //   discountPrice: '8.599,00 TL',
+  //   product_desc: 'Akıllı Robot Süpürge - Siyah',
+  //   product_image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
+  //   rating: 4.7,
+  //   reviews: 1984,
+  // };
 
-  const product1 = {
-    product_name: 'Xiaomi Mi Robot Vacuum Mop 2 Pro',
-    price: '8.999,00 TL',
-    discountPrice: '8.599,00 TL',
-    product_desc: 'Akıllı Robot Süpürge - Siyah',
-    product_image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-    rating: 4.7,
-    reviews: 1984,
-  };
+
+  useEffect(() => {
+    if(id) {
+      const fetchProduct = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(`http://localhost:3001/api/products/${id}`);
+          if (!response.ok) throw new Error('Network response was not ok.');
+          const data = await response.json();
+          setProduct(data);
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProduct();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/products/${id}/comments`);
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const data = await response.json();
+        setComments(data);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+  
+    if(id) {
+      fetchComments();
+    }
+  }, [id]);
+  
+
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3001/api/cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productId: id,
+          quantity: quantity,
+        }),
+      });
+  
+      if (!response.ok) throw new Error('Sepete ekleme işlemi başarısız.');
+  
+      // Sepete ekleme işlemi başarılıysa, kullanıcıya geri bildirim sağlayabilirsiniz.
+      alert("Ürün başarıyla sepete eklendi!");
+    } catch (error) {
+      console.error('Sepete ekleme sırasında bir hata oluştu:', error);
+      // Kullanıcıya hata mesajı göster
+      alert("Sepete ekleme sırasında bir hata oluştu.");
+    }
+  }
+  
+
 
   // useEffect(() => {
   //   const fetchProduct = async () => {
   //     try {
-  //       const response = await fetch('http://localhost:3001/api/products/1');
-  //       if (!response.ok) throw new Error('Network response was not ok.');
-  //       const data = await response.json();
-  //       setProduct(data[0]);
+  //       setProduct(product1);
   //       setLoading(false);
   //     } catch (error) {
   //       setError(error.message);
@@ -40,20 +108,6 @@ function ProductPage() {
 
   //   fetchProduct();
   // }, []);
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setProduct(product1);
-        setLoading(false);
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -115,7 +169,7 @@ function ProductPage() {
                       <FormControl className='text-center' value={quantity} onChange={(e) => handleQuantityChange(parseInt(e.target.value, 10))}/>
                       <InputGroup.Text onClick={() => handleQuantityChange(quantity + 1)}>+</InputGroup.Text>
                     </InputGroup>
-                    <Button className='mx-3 btn-orange' size="lg">Sepete Ekle</Button>
+                    <Button className='mx-3 btn-orange' size="lg" onClick={handleAddToCart}>Sepete Ekle</Button>
                   </div>
                 </div>
               </Card.Body>
@@ -135,16 +189,17 @@ function ProductPage() {
         <Card.Body>
             <Card.Title className='my-2'>Ürün Yorumları</Card.Title>
           </Card.Body>
-        <ProductComment
-          user={{ name: 'huseyin ugur aydin', photo: '' }}
-          rating={4.5}
-          comment="cokiyi urun"
-          images={[
-            'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-            'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png'
-          ]}
-          date="01/01/2024"
-        />
+          {comments.map(comment => (
+          <ProductComment
+            key={comment.id}
+            user={{ name: comment.user.name, photo: '' }}
+            rating={comment.rating}
+            comment={comment.text}
+            images={comment.images}
+            date={comment.date}
+          />
+        ))}
+
         </Card>
     </>
   );

@@ -7,11 +7,12 @@ function LoginPage() {
   const [name, setName] = useState('');  
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loginStatus, setLoginStatus] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://localhost:3001/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,8 +24,17 @@ function LoginPage() {
 
       if (response.ok) {
         console.log('Login successful:', data);
+
+        localStorage.setItem('token', data.token);
+
+        setLoginStatus('Kayıt başarılı, anasayfaya yönlendiriliyorsunuz.');
+
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+
       } else {
-        setError(data.message || 'An error occurred');
+        setError(data.message || 'Bir hata oluştu.');
       }
     } catch (error) {
       setError('Network error');
@@ -34,7 +44,7 @@ function LoginPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('localhost:3001/api/user', {
+      const response = await fetch('http://localhost:3001/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,13 +56,20 @@ function LoginPage() {
 
       if (response.ok) {
         console.log('Registration successful:', data);
+        localStorage.setItem('token', data.token);
+        setLoginStatus('Kayıt başarılı, anasayfaya yönlendiriliyorsunuz.');
+        setError('');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
       } else {
-        setError(data.message || 'An error occurred during registration');
+        setError(data.message || 'Bir hata oluştu.');
       }
     } catch (error) {
       setError('Network error');
     }
   };
+
 
 
 
@@ -83,18 +100,36 @@ function LoginPage() {
                 {/* Formlar */}
                 {activeTab === 'login' ? (
 
-                      <form onSubmit={handleLogin}>
-                      <div className="mb-3">
-                            <input type="email" className="form-control" id="email" aria-describedby="emailHelp" placeholder="Email" />
-                        </div>
-                        <div className="mb-4">
-                            <input type="password" className="form-control" id="password" placeholder="Şifre" />
-                        </div>
-                      <div className="d-grid gap-2">
-                        <button type="submit" className="btn btn-orange btn-lg">Giriş Yap</button>
-                      </div>
-                      {error && <div className="alert alert-danger" role="alert">{error}</div>}
-                      </form>
+                  <form onSubmit={handleLogin}>
+                  <div className="mb-3">
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="email"
+                      aria-describedby="emailHelp"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="password"
+                      placeholder="Şifre"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  <div className="d-grid gap-2">
+                    <button type="submit" className="btn btn-orange btn-lg">
+                      Giriş Yap
+                    </button>
+                  </div>
+                  {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                  {loginStatus && <div className="alert alert-success" role="alert">{loginStatus}</div>}
+                  </form>
                   ) : (
 
                     <form onSubmit={handleRegister}>
@@ -103,23 +138,38 @@ function LoginPage() {
                         type="text"
                         className="form-control"
                         id="name"
-                        placeholder="İism Soyisim"
+                        placeholder="İsim Soyisim"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                       />
                     </div>
-        
-                        <div className="mb-3">
-                            <input type="email" className="form-control" id="email" aria-describedby="emailHelp" placeholder="Email" />
-                        </div>
-                        <div className="mb-4">
-                            <input type="password" className="form-control" id="password" placeholder="Şifre" />
-                        </div>
-                        <div className="d-grid gap-2">
-                    <button type="submit" className="btn btn-orange btn-lg">Üye Ol</button>
-                  </div>
-                  {error && <div className="alert alert-danger" role="alert">{error}</div>}
-                </form>
+                    <div className="mb-3">
+                      <input
+                        type="email"
+                        className="form-control"
+                        id="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="password"
+                        placeholder="Şifre"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                    <div className="d-grid gap-2">
+                      <button type="submit" className="btn btn-orange btn-lg">Üye Ol</button>
+                    </div>
+                    {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                    {loginStatus && <div className="alert alert-success" role="alert">{loginStatus}</div>}
+                  </form>
+
                 )}
               </div>
             </div>
