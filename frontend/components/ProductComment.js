@@ -56,6 +56,7 @@ function ProductComment({ user, rating, comment, images, date }) {
               </div>
             )}
 
+            <span className="ms-2">{user.name}</span>
             <span className="ms-2 text-muted">{date}</span>
           </Card.Title>
           <Card.Subtitle className="my-2">{rating} {renderStars()}</Card.Subtitle>

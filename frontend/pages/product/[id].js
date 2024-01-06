@@ -37,7 +37,7 @@ function ProductPage() {
           const response = await fetch(`http://localhost:3001/api/products/${id}`);
           if (!response.ok) throw new Error('Network response was not ok.');
           const data = await response.json();
-          setProduct(data);
+          setProduct(data[0]);
         } catch (error) {
           setError(error.message);
         } finally {
@@ -52,7 +52,7 @@ function ProductPage() {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/products/${id}/comments`);
+        const response = await fetch(`http://localhost:3001/api/comments//${id}/`);
         if (!response.ok) throw new Error('Network response was not ok.');
         const data = await response.json();
         setComments(data);
@@ -148,7 +148,7 @@ function ProductPage() {
                   <Card.Title>{product.product_name}</Card.Title>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
-                      <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.price}</span> <span className="text-success">{product.discountPrice}</span></h5>
+                      <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.product_price}</span> <span className="text-success">{product.discountPrice}</span></h5>
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
@@ -192,11 +192,9 @@ function ProductPage() {
           {comments.map(comment => (
           <ProductComment
             key={comment.id}
-            user={{ name: comment.user.name, photo: '' }}
+            user={{ name: comment.name, photo: '' }}
             rating={comment.rating}
-            comment={comment.text}
-            images={comment.images}
-            date={comment.date}
+            comment={comment.comment}
           />
         ))}
 

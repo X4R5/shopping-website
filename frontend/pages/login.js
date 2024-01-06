@@ -44,19 +44,19 @@ function LoginPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/user', {
+      const response = await fetch('http://localhost:3001/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name, email, password }),
       });
-
       const data = await response.json();
 
       if (response.ok) {
         console.log('Registration successful:', data);
-        localStorage.setItem('token', data.token);
+        // localStorage.setItem('token', data.token);
+
         setLoginStatus('Kayıt başarılı, anasayfaya yönlendiriliyorsunuz.');
         setError('');
         setTimeout(() => {
@@ -66,6 +66,7 @@ function LoginPage() {
         setError(data.message || 'Bir hata oluştu.');
       }
     } catch (error) {
+      console.log(name, email, password);
       setError('Network error');
     }
   };

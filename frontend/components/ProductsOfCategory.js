@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 
-function ProductsOfCategory({ categoryId }) {
+function ProductsOfCategory({ categoryId, categoryTitle }) {
   const [products, setProducts] = useState([]);
-  const [categoryTitle, setCategoryTitle] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(`http://localhost:3001/api/products/homepage/${categoryId}`);
         const data = await response.json();
-        setProducts(data.products);
-        setCategoryTitle(data.categoryTitle);
+        setProducts(data);
+        console.log(data)
       } catch (error) {
         console.error('Error fetching products:', error);
       }

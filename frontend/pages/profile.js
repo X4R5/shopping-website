@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from '../components/Navbar';
 import OrderCard from '../components/OrderCard';
 
 function ProfilePage() {
-    const [userInfo, setUserInfo] = useState({
-        firstName: 'Hüseyin Uğur',
-        lastName: 'Aydın',
-        email: 'huseyin.ugur@example.com',
-        password: '',    
+    const [userInfo, setUserInfo] = useState({    
       });
 
       const [orders, setOrders] = useState([]);
@@ -22,7 +18,7 @@ function ProfilePage() {
         const fetchUserInfo = async () => {
           // Kullanıcı bilgilerini çekmek için API isteği
           try {
-            const response = await fetch('http://localhost:3001/api/user', {
+            const response = await fetch('http://localhost:3001/api/users', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
@@ -30,6 +26,7 @@ function ProfilePage() {
             if (!response.ok) throw new Error('Kullanıcı bilgileri çekilemedi.');
             const data = await response.json();
             setUserInfo(data);
+            console.log(data)
           } catch (error) {
             console.error('Kullanıcı bilgileri çekilirken hata oluştu:', error);
           }
@@ -96,8 +93,8 @@ function ProfilePage() {
       
     
     
-      const getInitials = (firstName, lastName) => {
-        return `${firstName[0]}${lastName[0]}`;
+      const getInitials = (name) => {
+        return `${name[0]}`;
       };
     
       const renderProfilePicture = () => {

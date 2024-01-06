@@ -13,9 +13,17 @@ const jwtCheck = jwt({
         }
         return null;
     }
-}).unless({path: ['/api/users/login', '/api/users/register', '/api/products/categories',
-{url: '/api/products' , methods: ['GET']}]});   
-
+}).unless({
+    path: [
+        '/api/users/login',
+        '/api/users/register',
+        '/api/products/categories/1',
+        /^\/api\/products\/homepage\/.*$/,
+        /^\/api\/products\/.*$/,
+        /^\/api\/comments\/.*$/,
+        { url: '/api/products', methods: ['GET'] }
+    ]
+});
 // async function isRevoked(req, payload, done) {
 //     if (!payload.isAdmin) {
 //         done(null, true);

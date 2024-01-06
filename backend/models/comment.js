@@ -17,12 +17,23 @@ class Comment{
     }
 
     // all comments by product_id
+   
     static getCommentsByProductId(connection, product_id, callback){
-        connection.query("SELECT * FROM comments WHERE product_id = ?", [product_id], (err, result) => {
+        const query = `
+            SELECT comments.*, users.name
+            FROM comments
+            JOIN users ON comments.user_id = users.UserId
+            WHERE comments.product_id = ?
+        `;
+    
+        connection.query(query, [product_id], (err, result) => {
             if(err) throw err;
             callback(result);
         });
     }
+    
+    
+    
 
     // comment by comment_id
     static getCommentByCommentId(connection, comment_id, callback){

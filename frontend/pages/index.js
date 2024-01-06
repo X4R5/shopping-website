@@ -9,7 +9,7 @@ function HomePage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost/api/products/categories/1');
+        const response = await fetch('http://localhost:3001/api/products/categories/1');
         const data = await response.json();
         setCategories(data);
       } catch (error) {
@@ -23,9 +23,9 @@ function HomePage() {
   return (
     <div>
       <Navbar />
-      <DiscountedProductsSlider />
+      {/* <DiscountedProductsSlider /> */}
       {categories.map(category => (
-        <ProductsOfCategory key={category.id} categoryId={category.id} />
+        <ProductsOfCategory key={2} categoryId={2} categoryTitle={category.category_name}/>
       ))}
     </div>
   );

@@ -25,15 +25,15 @@ class User {
     }
 
     // add user
-    static addUser(connection, name, email, password, address, callback) {
+    static addUser(connection, name, email, password, callback) {
         //get max UserId
         connection.query("SELECT MAX(UserId) AS maxUserId FROM users", (err, result) => {
             if (err) throw err;
             const maxUserId = result[0].maxUserId;
             const newUserId = maxUserId + 1;
             
-            connection.query("INSERT INTO users (UserId, name, email, password, address) VALUES (?,?,?,?,?)", 
-                [newUserId, name, email, password, address], (err, result) => {
+            connection.query("INSERT INTO users (UserId, name, email, password) VALUES (?,?,?,?)", 
+                [newUserId, name, email, password], (err, result) => {
                 if (err) throw err;
                 callback(result);
             });
