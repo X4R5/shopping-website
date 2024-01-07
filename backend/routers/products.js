@@ -68,4 +68,13 @@ router.get('/categories/1', (req, res) => {
     });
 });
 
+// GET endpoint to get all products by category id
+router.get('/category/:id', (req, res) => {
+    const id = req.params.id;
+    Product.getAllProductsByCategoryId(connection, id, (result) => {
+        res.json(result);
+    });
+});
+
+
 module.exports = router;

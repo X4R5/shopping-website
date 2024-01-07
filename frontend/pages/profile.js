@@ -13,49 +13,85 @@ function ProfilePage() {
       const [activeTab, setActiveTab] = useState('info');
 
       useEffect(() => {
-        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+        const token = localStorage.getItem('token');
     
         const fetchUserInfo = async () => {
-          // Kullanıcı bilgilerini çekmek için API isteği
           try {
-            const response = await fetch('http://localhost:3001/api/users', {
+            const response = await fetch('http://localhost:3001/api/users/user', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
             });
             if (!response.ok) throw new Error('Kullanıcı bilgileri çekilemedi.');
             const data = await response.json();
-            setUserInfo(data);
-            console.log(data)
+            setUserInfo(data[0]);
+            console.log(data[0])
           } catch (error) {
             console.error('Kullanıcı bilgileri çekilirken hata oluştu:', error);
           }
         };
     
-        const fetchOrders = async () => {
-          // Siparişleri çekmek için API isteği
+        const fetchProductDetails = async (id) => {
+          const token = localStorage.getItem('token');
           try {
-            const response = await fetch('http://localhost:3001/api/orders', {
+            const response = await fetch(`http://localhost:3001/api/products/${id}`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+            if (!response.ok) throw new Error('Ürün bilgisi çekilemedi.');
+            const product = await response.json();
+            return product;
+          } catch (error) {
+            console.error('Ürün çekilirken hata oluştu:', error);
+          }
+        };
+      
+        const fetchOrders = async () => {
+          try {
+            const response = await fetch('http://localhost:3001/api/orders/user', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
             });
             if (!response.ok) throw new Error('Siparişler çekilemedi.');
-            const data = await response.json();
-            setOrders(data);
+            const orderData = await response.json();
+      
+            const ordersWithProducts = await Promise.all(orderData.map(async order => {
+              
+              const productIds = order.productIds.split(',');
+              const quantities = order.quantities.split(',');
+      
+              const products = await Promise.all(productIds.map(async (productId, index) => {
+                const product = await fetchProductDetails(productId);
+                return {
+                  ...product,
+                  quantity: quantities[index]
+                };
+              }));
+      
+              return {
+                ...order,
+                products,
+                totalPrice: products.reduce((acc, product) => acc + product[0].product_price * product.quantity, 0)
+              };
+            }));
+      
+            setOrders(ordersWithProducts);
           } catch (error) {
             console.error('Siparişler çekilirken hata oluştu:', error);
           }
         };
-    
+      
         fetchUserInfo();
         fetchOrders();
+      
       }, []);
 
       const handleSubmit = async (e) => {
-        e.preventDefault(); // Formun varsayılan gönderme davranışını engelle
+        e.preventDefault();
       
-        // Şifrelerin uyuşup uyuşmadığını kontrol et
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         if(password !== confirmPassword) {
@@ -63,16 +99,16 @@ function ProfilePage() {
           return;
         }
       
-        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+        const token = localStorage.getItem('token');
         const updatedUserInfo = {
           name: userInfo.name,
           email: userInfo.email,
-          password: password, // Yeni şifre (eğer girildiyse)
+          password: password,
         };
       
         try {
           const response = await fetch('http://localhost:3001/api/user', {
-            method: 'PUT', // veya 'POST', API'nizin gerektirdiği yöntem
+            method: 'PUT',
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -83,18 +119,18 @@ function ProfilePage() {
           if (!response.ok) throw new Error('Profil güncellenemedi.');
       
           const data = await response.json();
-          setUserInfo(data); // Kullanıcı bilgilerini güncelle
-          alert("Profil başarıyla güncellendi!"); // Başarılı güncelleme mesajı
+          setUserInfo(data);
+          alert("Profil başarıyla güncellendi!");
         } catch (error) {
           console.error('Profil güncellenirken hata oluştu:', error);
-          alert("Profil güncellenirken bir hata oluştu."); // Hata mesajı
+          alert("Profil güncellenirken bir hata oluştu.");
         }
       };
       
     
     
       const getInitials = (name) => {
-        return `${name[0]}`;
+        return `${name}`;
       };
     
       const renderProfilePicture = () => {

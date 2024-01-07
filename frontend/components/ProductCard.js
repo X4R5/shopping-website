@@ -12,9 +12,8 @@ function ProductCard({ product }) {
       <div className="card-body d-flex flex-row justify-content-around mt-4">
         <div className="d-flex flex-column">
           <Link href={`/product/${product.id}`} passHref>
-            <a className="product-title card-title link-underline link-underline-opacity-0">
               {product.product_name}
-            </a>
+
           </Link>
           {product.product_price && <p className="product-price text-decoration-line-through align-self-bottom">
             {product.product_price} TL

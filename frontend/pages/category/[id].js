@@ -12,7 +12,7 @@ function CategoryPage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/api/products/categories/${id}`);
+                const response = await fetch(`http://localhost:3001/api/products/category/${id}`);
                 const data = await response.json();
                 setProducts(data);
             } catch (error) {

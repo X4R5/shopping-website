@@ -5,7 +5,10 @@ function NavbarCategories() {
   const categories = [
     { id: '1', name: 'Elektronik' },
     { id: '2', name: 'Giyim' },
-    { id: '3', name: 'Kitap' },
+    { id: '3', name: 'Ofis' },
+    { id: '4', name: 'Kozmetik' },
+    { id: '5', name: 'Supermarket' },
+    { id: '6', name: 'Kitap' },
   ];
 
   return (
@@ -20,9 +23,7 @@ function NavbarCategories() {
               {categories.map((category) => (
                 <li className="nav-item list-group-item" key={category.id}>
                   <Link href={`/category/${category.id}`} passHref>
-                    <a className="nav-link" role="button" >
                       {category.name}
-                    </a>
                   </Link>
                 </li>
               ))}

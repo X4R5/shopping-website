@@ -7,8 +7,9 @@ function OrderCard({ order }) {
   const additionalProducts = order.products.length > 2 ? order.products.length - 2 : 0;
 
   // Reversing the product array for proper z-index stacking
+  console.log(order)
   const displayProducts = order.products.slice(0, 2).reverse();
-
+  console.log(displayProducts[1]);
   return (
     <div className="card mb-3" style={{ overflow: 'hidden' }}> {/* Prevent overflow */}
       <div className="card-body">
@@ -18,7 +19,7 @@ function OrderCard({ order }) {
             <div className="d-flex align-items-center" style={{ paddingLeft: '20px' }}>
               {/* Display reversed product images for correct stacking */}
               {displayProducts.map((product, index) => (
-                <img key={index} src={product.image} alt={product.name} className="rounded-circle"
+                <img key={index} src={product[0].product_image} alt={product[0].product_name} className="rounded-circle"
                      style={{
                        width: '60px', height: '60px', objectFit: 'cover',
                        position: 'relative',
