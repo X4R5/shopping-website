@@ -1,34 +1,37 @@
-var {expressjwt: jwt} = require('express-jwt');
-require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
-const jwtCheck = jwt({
-    secret: process.env.JWT_SECRET,
-    algorithms: ['HS256'],
-    // isRevoked: isRevoked,
-    getToken: (req) => {
-        if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-            // Authorization: Bearer <token>
-            // return req.headers.authorization.split(' ')[1];
-            return req.headers.authorization.split(' ')[1];
-        }
-        return null;
+// Middleware for token verification
+const authenticateToken = (req, res, next) => {
+    // Get the token from the Authorization header
+    const authHeader = req.headers.authorization;
+  
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized - Missing Authorization header' });
     }
-}).unless({
-    path: [
-        '/api/users/login',
-        '/api/users/register',
-        '/api/products/categories/1',
-        /^\/api\/products\/homepage\/.*$/,
-        /^\/api\/products\/.*$/,
-        /^\/api\/comments\/.*$/,
-        { url: '/api/products', methods: ['GET'] }
-    ]
-});
-// async function isRevoked(req, payload, done) {
-//     if (!payload.isAdmin) {
-//         done(null, true);
-//     }
-//     done();
-// }
+  
+    // Token format: Bearer <token>
+    const [bearer, token] = authHeader.split(' ');
+  
+    if (bearer !== 'Bearer' || !token) {
+      return res.status(401).json({ error: 'Unauthorized - Invalid Authorization header format' });
+    }
+  
+    // Verify the JWT token
+    jwt.verify(token, 'KTU-1955', (err, decoded) => {
+      if (err) {
+        // Handle token verification error
+        console.error('Token verification error:', err.message);
+        return res.status(401).json({ error: 'Unauthorized - Invalid token' });
+      }
+  
+      // Add the decoded payload to the request object for later use
+      req.user = decoded;
+  
+      // Continue to the next middleware or route handler
+      next();
+    });
+  };
 
-module.exports = jwtCheck;
+
+
+module.exports = authenticateToken;
