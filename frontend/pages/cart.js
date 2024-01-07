@@ -11,26 +11,43 @@ function CartPage() {
   const grandTotal = total + shipping;
 
   useEffect(() => {
-    const fetchBasketItems = async () => {
+    const fetchProductDetails = async (id) => {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:3001/api/cart', {
-          method: 'GET',
+        const response = await fetch(`http://localhost:3001/api/products/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
-        if (!response.ok) throw new Error('Sepet bilgileri çekilemedi.');
-        const data = await response.json();
-        setBasketItems(data);
+        if (!response.ok) throw new Error('Ürün bilgisi çekilemedi.');
+        const product = await response.json();
+        return product;
       } catch (error) {
-        console.error('Sepetteki ürünler çekilirken hata oluştu:', error);
+        console.error('Ürün çekilirken hata oluştu:', error);
       }
+    };
+
+    const fetchBasketItems = async () => {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const updatedBasketItems = [];
+
+      for (const cartItem of cart) {
+        const product = await fetchProductDetails(cartItem.productId);
+        if (product) {
+          updatedBasketItems.push({
+            ...product,
+            quantity: cartItem.quantity,
+          });
+        }
+      }
+
+      setBasketItems(updatedBasketItems);
     };
 
     fetchBasketItems();
   }, []);
+
 
 
   const handleIncrease = (id) => {
@@ -41,6 +58,7 @@ function CartPage() {
       return item;
     });
     setBasketItems(newBasketItems);
+    localStorage.setItem('cart', JSON.stringify(newBasketItems));
   };
 
   const handleDecrease = (id) => {
@@ -51,16 +69,22 @@ function CartPage() {
       return item;
     });
     setBasketItems(newBasketItems);
+    localStorage.setItem('cart', JSON.stringify(newBasketItems));
   };
+  
 
   const handleRemove = (id) => {
     const newBasketItems = basketItems.filter(item => item.id !== id);
     setBasketItems(newBasketItems);
+    localStorage.setItem('cart', JSON.stringify(newBasketItems));
   };
+  
 
   const clearCart = () => {
     setBasketItems([]);
+    localStorage.removeItem('cart');
   };
+  
 
   return (
     <div>

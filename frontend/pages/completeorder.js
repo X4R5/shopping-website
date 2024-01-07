@@ -12,22 +12,38 @@ function OrderCompletionPage() {
   const [paymentMethod, setPaymentMethod] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
-    const fetchBasketItems = async () => {
+    const fetchProductDetails = async (id) => {
+      const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:3001/api/cart', {
-          method: 'GET',
+        const response = await fetch(`http://localhost:3001/api/products/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
-        if (!response.ok) throw new Error('Sepet bilgileri çekilemedi.');
-        const data = await response.json();
-        setBasketItems(data);
+        if (!response.ok) throw new Error('Ürün bilgisi çekilemedi.');
+        const product = await response.json();
+        return product;
       } catch (error) {
-        console.error('Sepetteki ürünler çekilirken hata oluştu:', error);
+        console.error('Ürün çekilirken hata oluştu:', error);
       }
+    };
+
+    const fetchBasketItems = async () => {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const updatedBasketItems = [];
+
+      for (const cartItem of cart) {
+        const product = await fetchProductDetails(cartItem.productId);
+        if (product) {
+          updatedBasketItems.push({
+            ...product,
+            quantity: cartItem.quantity,
+          });
+        }
+      }
+
+      setBasketItems(updatedBasketItems);
     };
 
     fetchBasketItems();
@@ -109,24 +125,22 @@ function OrderCompletionPage() {
         handlePurchase();
       }} className="row g-5">
 
-        <div className="col-md-6">
-          <h3>Teslimat adresi</h3>
-          <div className="mb-3">
-            <label htmlFor="city" className="form-label">İl</label>
-            <select id="city" className="form-select" value={city} onChange={(e) => setCity(e.target.value)}>
-
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="district" className="form-label">İlçe</label>
-            <select id="district" className="form-select" value={district} onChange={(e) => setDistrict(e.target.value)}>
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="address" className="form-label">Adres</label>
-            <textarea id="address" className="form-control" value={address} onChange={(e) => setAddress(e.target.value)} />
-          </div>
+      <div className="col-md-6">
+        <h3>Teslimat adresi</h3>
+        <div className="mb-3">
+          <label htmlFor="city" className="form-label">İl</label>
+          <input type="text" id="city" className="form-control" value={city} onChange={(e) => setCity(e.target.value)} />
         </div>
+        <div className="mb-3">
+          <label htmlFor="district" className="form-label">İlçe</label>
+          <input type="text" id="district" className="form-control" value={district} onChange={(e) => setDistrict(e.target.value)} />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="address" className="form-label">Adres Detayı</label>
+          <textarea id="address" className="form-control" value={address} onChange={(e) => setAddress(e.target.value)} />
+        </div>
+      </div>
+
 
         <div className="col-md-6">
           <h3>Teslimat Seçenekleri</h3>

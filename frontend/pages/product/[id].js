@@ -67,31 +67,25 @@ function ProductPage() {
   }, [id]);
   
 
-  const handleAddToCart = async () => {
-    const token = localStorage.getItem('token');
+  const handleAddToCart = () => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    const productToAdd = {
+      productId: id,
+      quantity: quantity,
+    };
+  
+    const updatedCart = [...cart, productToAdd];
+  
     try {
-      const response = await fetch(`http://localhost:3001/api/cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          productId: id,
-          quantity: quantity,
-        }),
-      });
-  
-      if (!response.ok) throw new Error('Sepete ekleme işlemi başarısız.');
-  
-      // Sepete ekleme işlemi başarılıysa, kullanıcıya geri bildirim sağlayabilirsiniz.
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
       alert("Ürün başarıyla sepete eklendi!");
     } catch (error) {
       console.error('Sepete ekleme sırasında bir hata oluştu:', error);
-      // Kullanıcıya hata mesajı göster
       alert("Sepete ekleme sırasında bir hata oluştu.");
     }
   }
+  
   
 
 
@@ -192,6 +186,7 @@ function ProductPage() {
           {comments.map(comment => (
           <ProductComment
             key={comment.id}
+            id={comment.id}
             user={{ name: comment.name, photo: '' }}
             rating={comment.rating}
             comment={comment.comment}

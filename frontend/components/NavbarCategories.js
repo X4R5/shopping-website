@@ -1,68 +1,33 @@
 import React from 'react';
+import Link from 'next/link';
 
 function NavbarCategories() {
+  const categories = [
+    { id: '1', name: 'Elektronik' },
+    { id: '2', name: 'Giyim' },
+    { id: '3', name: 'Kitap' },
+  ];
+
   return (
-    <div class="bg-light w-100" style={{ height: '75px' }}>
-      <nav class="navbar navbar-expand-sm border-body d-flex flex-row align-items-center">
-        <div class="container-fluid d-flex justify-content-center align-items-center">
-          <button class="navbar-toggler border-0 mt-2 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#categories">
+    <div className="bg-light w-100" style={{ height: '75px' }}>
+      <nav className="navbar navbar-expand-sm border-body d-flex flex-row align-items-center">
+        <div className="container-fluid d-flex justify-content-center align-items-center">
+          <button className="navbar-toggler border-0 mt-2 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#categories">
             Kategoriler
           </button>
-          <div class="collapse navbar-collapse mx-5" id="categories">
-            <ul class="navbar-nav horizontal-list d-flex justify-content-center">
-
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Elektronik
-                </a>
-              </li>
-
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Giyim
-                </a>
-              </li>
-              
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Kitap
-                </a>
-              </li>
-
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Ofis
-                </a>
-              </li>
-
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Oyuncak
-                </a>
-              </li>
-
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Kişisel Bakım
-                </a>
-              </li>
-
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Spor
-                </a>
-              </li>
-
-              <li class="nav-item list-group-item">
-                <a class="nav-link" href="#" role="button" >
-                  Supermarket
-                </a>
-              </li>
-
-              
+          <div className="collapse navbar-collapse mx-5" id="categories">
+            <ul className="navbar-nav horizontal-list d-flex justify-content-center">
+              {categories.map((category) => (
+                <li className="nav-item list-group-item" key={category.id}>
+                  <Link href={`/category/${category.id}`} passHref>
+                    <a className="nav-link" role="button" >
+                      {category.name}
+                    </a>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-          
         </div>
       </nav>
     </div>

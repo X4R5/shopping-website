@@ -3,13 +3,77 @@ import { Card, ListGroup, ListGroupItem, Row, Col, Modal, Button } from 'react-b
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 
-function ProductComment({ user, rating, comment, images, date }) {
+function ProductComment({ id, user, rating, comment, images, date }) {
   const [selectedImg, setSelectedImg] = useState(null);
   const [modalShow, setModalShow] = useState(false);
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
 
-  // Generates the star rating visualization
+
+  const handleLike = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/${id}/like`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) throw new Error('Beğenme işlemi başarısız.');
+  
+      // Beğeni sayısını güncellemek için yeni bir istek at
+      const updatedComment = await fetchComment();
+      setLikes(updatedComment.likes);
+      setDislikes(updatedComment.dislikes);
+    } catch (error) {
+      console.error('Beğenme işleminde hata oluştu:', error);
+    }
+  };
+  
+  const handleDislike = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/${id}/dislike`, { 
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) throw new Error('Beğenmeme işlemi başarısız.');
+  
+      const updatedComment = await fetchComment();
+      setLikes(updatedComment.likes);
+      setDislikes(updatedComment.dislikes);
+    } catch (error) {
+      console.error('Beğenmeme işleminde hata oluştu:', error);
+    }
+  };
+  
+  const fetchComment = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) throw new Error('Yorum bilgisi çekilemedi.');
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Yorum bilgisi çekerken hata oluştu:', error);
+      return null;
+    }
+  };
+  
+
   const renderStars = () => {
     let stars = [];
     for (let i = 0; i < Math.floor(rating); i++) {
@@ -29,11 +93,6 @@ function ProductComment({ user, rating, comment, images, date }) {
         {initials}
       </div>
     );
-  };
-
-  const handleImageClick = (img) => {
-    setSelectedImg(img);
-    setModalShow(true);
   };
 
   return (
@@ -62,29 +121,12 @@ function ProductComment({ user, rating, comment, images, date }) {
           <Card.Subtitle className="my-2">{rating} {renderStars()}</Card.Subtitle>
           <Card.Text>{comment}</Card.Text>
         </Card.Body>
-        {images && images.length > 0 && (
-          <ListGroup className="list-group-flush">
-            <div className='d-flex flex-row'>
-              {images.map((img, index) => (
-                <div className="mx-2">
-                  <img
-                    src={img}
-                    alt={`Comment attachment ${index}`}
-                    className="img-fluid my-2 mx-2"
-                    onClick={() => handleImageClick(img)}
-                    style={{ cursor: 'pointer', height: '100px', width: '100px', objectFit: 'cover' }}
-                  />
-                </div>
-              ))}
-            </div>
-          </ListGroup>
-        )}
 
         <Card.Footer>
-          <Button variant="success" className="me-2">
+          <Button variant="success" className="me-2" onClick={handleLike}>
             <FontAwesomeIcon icon={faThumbsUp} /> Beğen ({likes})
           </Button>
-          <Button variant="danger">
+          <Button variant="danger" onClick={handleDislike}>
             <FontAwesomeIcon icon={faThumbsDown} /> Beğenme ({dislikes})
           </Button>
         </Card.Footer>
