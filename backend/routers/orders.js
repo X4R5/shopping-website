@@ -2,6 +2,7 @@ const Order = require('../models/order');
 const {connection} = require("../database");
 const express = require('express');
 const router = express.Router();
+const authenticateToken = require("../helpers/jwt");
 
 // GET endpoint to retrieve all orders
 router.get("/", (req, res) => {
@@ -19,10 +20,12 @@ router.get("/:orderId", (req, res) => {
 });
 
 // POST endpoint to add a new order
-router.post("/", (req, res) => {
-    const {UserId, OrderDate, ProductList} = req.body;
-    Order.addOrder(connection, UserId, OrderDate, ProductList, (result) => {
-        res.json(result); 
+router.post("/", authenticateToken, (req, res) => {
+    // get userId from req.headers.authorization
+    userId = req.user.id;
+    const {ProductList, address, deliveryOption, paymentMethod} = req.body;
+    Order.addOrder(connection, ProductList, userId, address, deliveryOption, paymentMethod, (result) => {
+        res.json(result);
     });
 });
 

@@ -17,8 +17,8 @@ require('dotenv').config();
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
 app.use(cors());
-app.use(jwtCheck);
 app.use(errorHandler)
+app.use(jwtCheck);
 
 // Routers
 app.use('/api/products', productsRouter);
