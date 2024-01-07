@@ -6,7 +6,6 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 function OrderCard({ order }) {
   const additionalProducts = order.products.length > 2 ? order.products.length - 2 : 0;
 
-  // Reversing the product array for proper z-index stacking
   console.log(order)
   const displayProducts = order.products.slice(0, 2).reverse();
   console.log(displayProducts[1]);
@@ -15,9 +14,7 @@ function OrderCard({ order }) {
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
-            {/* Padding to offset the negative margin */}
             <div className="d-flex align-items-center" style={{ paddingLeft: '20px' }}>
-              {/* Display reversed product images for correct stacking */}
               {displayProducts.map((product, index) => (
                 <img key={index} src={product[0].product_image} alt={product[0].product_name} className="rounded-circle"
                      style={{

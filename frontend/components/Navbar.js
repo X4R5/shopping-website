@@ -1,8 +1,12 @@
 import React from 'react';
 import ColorfulLine from './ColorfulLine';
 import NavbarCategories from './NavbarCategories';
+import { Link } from 'react-router-dom';
 
 function Navbar() {
+  // Check if the token is present in local storage
+  const isLoggedIn = !!localStorage.getItem('token');
+
   return (
     <div className="mb-3">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -21,15 +25,29 @@ function Navbar() {
               </li>
             </ul>
             <div className="ml-auto">
-              <button type="button" className="btn btn-secondary py-2 py-lg-3">Giriş Yap</button>
+              {isLoggedIn ? (
+                <>
+                <Link href={`/profile/`} passHref>
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1">Sepet</button>
+                </Link>
+
+                <Link href={`/cart/`} passHref>
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1">Profilim</button>
+                </Link>
+                </>
+              ) : (
+                <Link href={`/login/`} passHref>
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3">Giriş Yap</button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
       </nav>
 
-    <ColorfulLine />
+      <ColorfulLine />
 
-    <NavbarCategories />
+      <NavbarCategories />
 
     </div>
   );
