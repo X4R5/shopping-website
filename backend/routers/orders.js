@@ -12,12 +12,12 @@ router.get("/", (req, res) => {
 });
 
 // GET endpoint to retrieve order by orderId
-router.get("/:orderId", (req, res) => {
-    const orderId = req.params.orderId;
-    Order.getOrderByOrderId(connection, orderId, (result) => {
-        res.json(result);
-    });
-});
+// router.get("/:orderId", (req, res) => {
+//     const orderId = req.params.orderId;
+//     Order.getOrderByOrderId(connection, orderId, (result) => {
+//         res.json(result);
+//     });
+// });
 
 // POST endpoint to add a new order
 router.post("/", authenticateToken, (req, res) => {
@@ -25,6 +25,14 @@ router.post("/", authenticateToken, (req, res) => {
     userId = req.user.id;
     const {ProductList, address, deliveryOption, paymentMethod} = req.body;
     Order.addOrder(connection, ProductList, userId, address, deliveryOption, paymentMethod, (result) => {
+        res.json(result);
+    });
+});
+
+// GET endpoint to retrieve orders by userId
+router.get("/user", authenticateToken, (req, res) => {
+    const userId = req.user.id;
+    Order.getOrderDetailsByOrderId(connection, userId, (result) => {
         res.json(result);
     });
 });

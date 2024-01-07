@@ -1,39 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-function CartItem({ item, onIncrease, onDecrease, onRemove }) {
-  const itemTotalPrice = item.price * item.quantity;
+function CartItem({ item, quantity, onIncrease, onDecrease, onRemove }) {
+  const itemTotalPrice = item.product_price * quantity;
+
+  useEffect(() => {
+    console.log('CartItem component is mounted!');
+    console.log(item);
+  }, []);
 
   return (
     <div className="card mb-3">
       <div className="card-body">
         <div className="d-flex flex-row align-items-center justify-content-start">
           <div className="me-3">
-            <img src={item.image} alt={item.name} className="img-fluid" style={{width: '100px'}} />
+            <img src={item.product_image} alt={item.product_name} className="img-fluid" style={{width: '100px'}} />
           </div>
           <div className="flex-grow-1 me-3" style={{minWidth: 0}}>
-            <h5 className="card-title" style={{
+            <h5 className="card-title text-black" style={{
                 maxWidth: '500px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap'
-            }}>{item.name}</h5>
+            }}>{item.product_name}</h5>
           </div>
           <div className="ms-auto d-flex align-items-center">
             {
-              item.quantity > 1 ? (
-                <button className="btn btn-outline-secondary" onClick={() => onDecrease(item.id)}>
+              quantity > 1 ? (
+                <button className="btn btn-outline-secondary" onClick={() => onDecrease(item.product_id)}>
                   <FontAwesomeIcon icon={faMinus} />
                 </button>
               ) : (
-                <button className="btn btn-outline-danger" onClick={() => onRemove(item.id)}>
+                <button className="btn btn-outline-danger" onClick={() => onRemove(item.product_id)}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               )
             }
-            <span className="mx-2">{item.quantity}</span>
-            <button className="btn btn-outline-secondary" onClick={() => onIncrease(item.id)}>
+            <span className="mx-2">{quantity}</span>
+            <button className="btn btn-outline-secondary" onClick={() => onIncrease(item.product_id)}>
               <FontAwesomeIcon icon={faPlus} />
             </button>
           </div>

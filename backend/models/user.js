@@ -1,16 +1,15 @@
 class User {
-    constructor(UserId, name, email, password, isAdmin, address) {
+    constructor(UserId, name, email, password, isAdmin) {
         this.UserId = UserId;
         this.name = name;
         this.email = email;
         this.password = password;
         this.isAdmin = isAdmin;
-        this.address = address;
     }
 
     // get all users
     static getAllUsers(connection, callback) {
-        connection.query("SELECT UserId, name, email, address FROM users", (err, result) => {
+        connection.query("SELECT UserId, name, email FROM users", (err, result) => {
             if (err) throw err;
             callback(result);
         });
@@ -18,7 +17,7 @@ class User {
 
     // get user by id
     static getUserById(connection, id, callback) {
-        connection.query("SELECT UserId, name, email, address FROM users WHERE UserId = ?", [id], (err, result) => {
+        connection.query("SELECT UserId, name, email FROM users WHERE UserId = ?", [id], (err, result) => {
             if (err) throw err;
             callback(result);
         });
@@ -49,9 +48,9 @@ class User {
     }
 
     // update user by id
-    static updateUserById(connection, id, name, email, password, address, callback) {
-        connection.query("UPDATE users SET name = ?, email = ?, password = ? WHERE UserId = ?, address = ?", 
-        [name, email, password, id, address], (err, result) => {
+    static updateUserById(connection, id, name, email, password, callback) {
+        connection.query("UPDATE users SET name = ?, email = ?, password = ? WHERE UserId = ?", 
+        [name, email, password, id], (err, result) => {
             if (err) throw err;
             callback(result);
         });

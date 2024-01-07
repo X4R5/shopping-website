@@ -1,6 +1,7 @@
 const {User} = require('../models/user');
 const express = require('express');
 const {connection} = require("../database");
+const authenticateToken = require("../helpers/jwt");
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 
@@ -13,8 +14,8 @@ router.get("/", (req, res) => {
 });
 
 // GET endpoint to retrieve user by id
-router.get("/:id", (req, res) => {
-    const id = req.params.id;
+router.get("/user", authenticateToken, (req, res) => {
+    const id = req.user.id;
     User.getUserById(connection, id, (result) => {
         res.json(result);
     });

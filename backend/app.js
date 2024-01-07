@@ -7,7 +7,6 @@ const commentsRouter = require("./routers/comments");
 const {connection} = require("./database");
 const orderRouter = require("./routers/orders");
 const loginRouter = require("./routers/login");
-const jwtCheck = require("./helpers/jwt");
 const errorHandler = require("./helpers/error-handler");
 const cors = require("cors");
 const app = express();
@@ -18,7 +17,6 @@ app.use(bodyParser.json());
 app.use(morgan('tiny'));
 app.use(cors());
 app.use(errorHandler)
-app.use(jwtCheck);
 
 // Routers
 app.use('/api/products', productsRouter);

@@ -1,6 +1,6 @@
 class Product {
     constructor(product_id, category_id, product_image, product_name, product_price, product_stock, 
-        product_desc) {
+        product_desc, campaign, discount) {
         this.product_id = product_id;
         this.category_id = category_id;
         this.product_image = product_image;
@@ -8,6 +8,8 @@ class Product {
         this.product_price = product_price;
         this.product_stock = product_stock;
         this.product_desc = product_desc;
+        this.campaign = campaign;
+        this.discount = discount;
     }
 
     // get all products
@@ -93,6 +95,14 @@ class Product {
         });
     }
     
+
+    // get all products by category_id
+    static getAllProductsByCategoryId(connection, category_id, callback) {
+        connection.query("SELECT * FROM products WHERE category_id = ?", [category_id], (err, result) => {
+            if (err) throw err;
+            callback(result);
+        });
+    }
 
     // get category by category_id
     static getCategoryByCategoryId(connection, category_id, callback) {
