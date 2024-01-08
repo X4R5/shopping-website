@@ -3,13 +3,50 @@ import { Card, Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 
-function ProductComment({ id, user, rating, comment, date }) {
+function ProductComment({ id, user, rating, comment, date, isAdmin }) {
 
   const [modalShow, setModalShow] = useState(false);
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
+  const [adminReply, setAdminReply] = useState('');
+  const [existingReply, setExistingReply] = useState(null);
 
   const token = localStorage.getItem('token');
+
+
+  useEffect(() => {
+    const fetchAndSetCommentData = async () => {
+      const updatedCommentData = await fetchComment();
+      if (updatedCommentData) {
+        setLikes(updatedCommentData[0].likes);
+        setDislikes(updatedCommentData[0].dislikes);
+        setExistingReply(updatedCommentData[0].adminReply || null);
+      }
+    };
+
+    fetchAndSetCommentData();
+  }, []);
+
+  const handleAdminReply = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/reply/${id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reply: adminReply }),
+      });
+
+      if (!response.ok) throw new Error('Reply action failed.');
+
+      const replyData = await response.json();
+      setExistingReply(replyData.reply);
+      setAdminReply('');
+    } catch (error) {
+      console.error('Error during reply action:', error);
+    }
+  };
 
   const updateLikesDislikes = async () => {
     const updatedComment = await fetchComment();
@@ -18,6 +55,7 @@ function ProductComment({ id, user, rating, comment, date }) {
       setDislikes(updatedComment[0].dislikes);
     }
   };
+
 
   const handleLike = async () => {
     try {
@@ -73,21 +111,6 @@ function ProductComment({ id, user, rating, comment, date }) {
       return null;
     }
   };
-
-  useEffect(() => {
-    const fetchAndSetComment = async () => {
-      const updatedComment = await fetchComment();
-      if (updatedComment) {
-        setLikes(updatedComment[0].likes);
-        setDislikes(updatedComment[0].dislikes);
-        console.log(updatedComment);
-        console.log(id);
-      }
-    };
-
-    // Call the fetchComment function when the component mounts
-    fetchAndSetComment();
-  }, []); 
 
   
 
@@ -155,6 +178,29 @@ function ProductComment({ id, user, rating, comment, date }) {
           
         </Modal.Body>
       </Modal>
+
+      {isAdmin && (
+        <Card.Footer>
+          {existingReply ? (
+            <div>
+              <strong>Admin Response: </strong>
+              <p>{existingReply}</p>
+            </div>
+          ) : (
+            <InputGroup className="mb-3">
+              <FormControl
+                as="textarea"
+                placeholder="Yanıtınızı buraya yazınız..."
+                value={adminReply}
+                onChange={(e) => setAdminReply(e.target.value)}
+              />
+              <InputGroup.Append>
+                <Button variant="outline-secondary" onClick={handleAdminReply}>Yanıtla</Button>
+              </InputGroup.Append>
+            </InputGroup>
+          )}
+        </Card.Footer>
+      )}
     </>
   );
 }

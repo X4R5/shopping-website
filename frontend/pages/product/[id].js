@@ -17,6 +17,7 @@ function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(0);
 
@@ -55,10 +56,21 @@ function ProductPage() {
       } catch (error) {
         setError(error.message);
       }
-    };
+    }
+
+    const fetchCommentCount = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/comments/totalcomments/${id}`);
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const data = await response.json();
+        setCommentCount(data[0].count);
+      } catch (error) {
+        setError(error.message);
+      }}
   
     if(id) {
       fetchComments();
+      fetchCommentCount();
     }
   }, [id]);
   
@@ -236,7 +248,7 @@ function ProductPage() {
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
                         <div className='mr-2'>{product.rating} {renderStars()}</div>
-                        {/* <div className='mx-2'>{product.reviews} Değerlendirme</div> */}
+                        <div className='mx-2'>{commentCount} Değerlendirme</div>
                       </div>
                   </ListGroup.Item>
                   </ListGroup>
@@ -297,7 +309,7 @@ function ProductPage() {
       {/* Comments Section */}
       <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
         <Card.Body>
-          <Card.Title className='my-2'>Ürün Yorumları</Card.Title>
+          <Card.Title className='my-2'>Ürün Yorumları ({commentCount})</Card.Title>
         </Card.Body>
         {comments.map(comment => (
           <ProductComment
@@ -306,6 +318,7 @@ function ProductPage() {
             user={{ name: comment.name, photo: '' }}
             rating={comment.rating}
             comment={comment.comment}
+            isAdmin = {localStorage.getItem('isAdmin')}
           />
         ))}
       </Card>

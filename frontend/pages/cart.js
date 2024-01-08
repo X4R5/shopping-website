@@ -6,9 +6,13 @@ import Link from 'next/link';
 
 function CartPage() {
   const [basketItems, setBasketItems] = useState([]);
+  const [coupon, setCoupon] = useState('');
+  const [isDiscountApplied, setIsDiscountApplied] = useState(false);
+  const [discountAmount, setDiscountAmount] = useState(0);
+
 
   const total = basketItems.reduce((acc, item) => acc + item[0].product_price * item.quantity, 0);
-  const shipping = total > 50000 ? 0 : 29.90;
+  const shipping = 29.90;
   const grandTotal = total + shipping;
 
   useEffect(() => {
@@ -97,6 +101,40 @@ function CartPage() {
   
   
 
+  const handleCouponChange = (e) => {
+    setCoupon(e.target.value);
+  };
+
+  const applyCoupon = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/coupons/validate/${coupon}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok){
+        alert(error.message);
+        throw new Error('Kupon uygulanamadı.');
+      }
+  
+      const data = await response.json();
+      setIsDiscountApplied(true);
+      setDiscountAmount(data.discountAmount);
+      alert("Kupon başarıyla uygulandı!");
+  
+    } catch (error) {
+      console.error('Kupon uygulanırken hata oluştu:', error);
+      alert(error.message);
+    }
+  };
+  
+
+  const finalTotal = isDiscountApplied ? grandTotal - discountAmount : grandTotal;
+
+
   return (
     <div>
       <Navbar />
@@ -131,14 +169,35 @@ function CartPage() {
                       <span className='mx-5'>Kargo:</span>
                       <span>{shipping.toFixed(2)} TL</span>
                     </div>
-                    <div className="d-flex justify-content-between">
-                      <span className='mx-5'>Toplam:</span>
-                      <span>{grandTotal.toFixed(2)} TL</span>
-                    </div>
+                    {
+                      isDiscountApplied ? (
+                        <>
+                          <div className="d-flex justify-content-end">
+                            <div className="mx-5">Uygulanan İndirim:</div>
+                            <div>{discountAmount.toFixed(2)} TL</div>
+                          </div>
+                          <div className="d-flex justify-content-end">
+                            <div className="mx-5">Toplam:</div>
+                            <div>{finalTotal.toFixed(2)} TL</div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="d-flex justify-content-between">
+                          <span className='mx-5'>Toplam:</span>
+                          <span>{grandTotal.toFixed(2)} TL</span>
+                        </div>
+                      )
+                    }
+
+                    
                   </div>
                 </div>
               </div>
           <div className="card-footer d-flex justify-content-end">
+            <div className="my-3">
+              <input type="text" value={coupon} onChange={handleCouponChange} placeholder="Kupon Kodu" className="form-control" />
+              <button className="btn btn-success mt-2" onClick={applyCoupon}>Kupon Uygula</button>
+            </div>
           <Link href="/completeorder">
             <button className="btn btn-orange">Satın Al</button>
           </Link>
