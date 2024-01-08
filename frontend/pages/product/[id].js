@@ -124,15 +124,13 @@ function ProductPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Include authorization token if your API requires
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ sortOption: sortOption }), // send sortOption in the request body
+        body: JSON.stringify({ sortOption: sortOption }),
       });
       if (!response.ok) throw new Error('Failed to fetch sorted comments.');
 
       const sortedComments = await response.json();
-      setComments(sortedComments); // Update comments with the sorted list
+      setComments(sortedComments);
     } catch (error) {
       console.error('Error fetching sorted comments:', error);
       setError(error.message);
@@ -162,6 +160,28 @@ function ProductPage() {
     }
   }
 
+
+  const handleAddToCompare = () => {
+    const maxCompareItems = 2;
+    let compareList = JSON.parse(localStorage.getItem('compareList')) || [];
+  
+    if (!compareList.includes(id)) {
+      if (compareList.length < maxCompareItems) {
+        compareList.push(id);
+        localStorage.setItem('compareList', JSON.stringify(compareList));
+        alert("Ürün karşılaştırmaya eklendi!");
+      } else {
+        alert("En fazla 2 ürün karşılaştırabilirsiniz!");
+      }
+    } else {
+      alert("Ürün zaten karşılaştırmada!");
+    }
+  
+    if (compareList.length >= 2) {
+      router.push('/compare');
+    }
+  };
+  
 
   return (
     <>
@@ -199,8 +219,7 @@ function ProductPage() {
                 </div>
                 <div className="mt-auto">
                   <div className="d-flex justify-content-around my-3">
-                    <Button variant="outline-secondary" size="md">Listeme Ekle</Button>
-                    <Button variant="outline-secondary" size="md">Karşılaştır</Button>
+                    <Button variant="outline-secondary" size="md" onClick={handleAddToCompare}>Karşılaştır</Button>
                   </div>
                   <div className='d-flex flex-row align-items-center justify-content-center'>
                     <InputGroup className="w-25 mx-3">
