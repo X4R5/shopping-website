@@ -11,7 +11,6 @@ function ProductPage() {
   const router = useRouter();
   const { id } = router.query; 
 
-  const [rating, setRating] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   const [product, setProduct] = useState(null);
@@ -26,31 +25,6 @@ function ProductPage() {
   const [sortLikesDirection, setSortLikesDirection] = useState('desc');
   const [sortDislikesDirection, setSortDislikesDirection] = useState('desc');
 
-  const fetchComments = async () => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/comments//${id}/`);
-      if (!response.ok) throw new Error('Network response was not ok.');
-      const data = await response.json();
-      setComments(data);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const fetchAndSetRating = async () => {
-    try {
-        const updatedRating = await fetch(`http://localhost:3001/api/comments/${id}/rating`);
-        
-        if (!updatedRating.ok) {
-            throw new Error('Failed to fetch rating.');
-        }
-
-        const data = await updatedRating.json();
-        setRating(data[0].averageRating);
-    } catch (error) {
-        console.error('Error fetching rating:', error);
-    }
-};
 
   useEffect(() => {
     if(id) {
@@ -69,12 +43,10 @@ function ProductPage() {
       };
 
       fetchProduct();
-      fetchAndSetRating();
     }
   }, [id]);
 
   useEffect(() => {
-
     const fetchComments = async () => {
       try {
         const response = await fetch(`http://localhost:3001/api/comments//${id}/`);
@@ -95,7 +67,6 @@ function ProductPage() {
       } catch (error) {
         setError(error.message);
       }}
-
   
     if(id) {
       fetchComments();
@@ -130,16 +101,14 @@ function ProductPage() {
 
   const renderStars = () => {
     let stars = [];
-    for (let i = 0; i < Math.floor(rating); i++) {
+    for (let i = 0; i < Math.floor(product.rating); i++) {
       stars.push(<FontAwesomeIcon key={`full${i}`} icon={faStar} style={{ color: 'orange' }} />);
     }
-    if (rating % 1 >= 0.5) {
+    if (product.rating % 1 >= 0.5) {
       stars.push(<FontAwesomeIcon key="half" icon={faStarHalfAlt} style={{ color: 'orange' }} />);
     }
     return stars;
   };
-
-
 
 
   const handleQuantityChange = (newQuantity) => {
@@ -147,7 +116,6 @@ function ProductPage() {
       setQuantity(newQuantity);
     }
   }
-
 
   const sortComments = (sortType) => {
     let sortedComments = [];
@@ -188,10 +156,7 @@ function ProductPage() {
     }
 
     try {
-
-      const response = await fetch(`http://localhost:3001/api/comments/filter/${id}`, {
-
-
+      const response = await fetch(`http://localhost:3001/api/comments/${id}/sorted`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -218,9 +183,7 @@ function ProductPage() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-
-        body: JSON.stringify({product_id: id, comment: newComment, rating: newRating }),
-
+        body: JSON.stringify({ comment: newComment, rating: newRating }),
       });
       if (!response.ok) throw new Error('Comment post failed.');
 
@@ -256,7 +219,6 @@ function ProductPage() {
   };
   
 
-
   return (
     <>
       <Navbar />
@@ -285,13 +247,8 @@ function ProductPage() {
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
-
-                        <div className='mr-2'>{rating} {renderStars()}</div>
-
-                    
-
+                        <div className='mr-2'>{product.rating} {renderStars()}</div>
                         <div className='mx-2'>{commentCount} Değerlendirme</div>
-
                       </div>
                   </ListGroup.Item>
                   </ListGroup>
@@ -333,9 +290,6 @@ function ProductPage() {
     </Card>
 
 
-        <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
-
-
         {/* <Row className="justify-content-center my-3">
           <ButtonGroup>
             <Button variant="outline-secondary" onClick={() => sortComments('rating')}>Rating</Button>
@@ -346,18 +300,14 @@ function ProductPage() {
 
         <Row className="justify-content-center my-3">
           <ButtonGroup>
-
-            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>X</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>Date</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('rating')}>Rating</Button>
-            <Button variant="outline-secondary" onClick={() => fetchSortedComments('like')}>Likes</Button>
-            <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislike')}>Dislikes</Button>
-
-
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('likes')}>Likes</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislikes')}>Dislikes</Button>
           </ButtonGroup>
         </Row>
       {/* Comments Section */}
       <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
-
         <Card.Body>
           <Card.Title className='my-2'>Ürün Yorumları ({commentCount})</Card.Title>
         </Card.Body>
