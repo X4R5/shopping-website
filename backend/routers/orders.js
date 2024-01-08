@@ -11,13 +11,6 @@ router.get("/", (req, res) => {
     });
 });
 
-// GET endpoint to retrieve order by orderId
-// router.get("/:orderId", (req, res) => {
-//     const orderId = req.params.orderId;
-//     Order.getOrderByOrderId(connection, orderId, (result) => {
-//         res.json(result);
-//     });
-// });
 
 // POST endpoint to add a new order
 router.post("/", authenticateToken, (req, res) => {
@@ -36,5 +29,13 @@ router.get("/user", authenticateToken, (req, res) => {
         res.json(result);
     });
 });
+
+// POST endpoint to check for couponCode
+router.post("/coupon", (req, res) => {
+    const {couponCode} = req.body;
+    Order.checkCoupon(connection, couponCode, (result) => {
+        res.json(result);
+    });
+}); 
 
 module.exports = router;

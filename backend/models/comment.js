@@ -22,10 +22,12 @@ class Comment{
    
     static getCommentsByProductId(connection, product_id, callback){
         const query = `
-            SELECT comments.*, users.name
-            FROM comments
-            JOIN users ON comments.user_id = users.UserId
-            WHERE comments.product_id = ?
+        SELECT comments.*, users.name
+        FROM comments
+        JOIN users ON comments.user_id = users.UserId
+        WHERE comments.product_id = ?
+        ORDER BY comments.comment_id DESC;
+        
         `;
     
         connection.query(query, [product_id], (err, result) => {
@@ -46,20 +48,60 @@ class Comment{
     }
 
     // add comment
-    static addComment(connection, product_id, user_id, comment, rating, callback){
-        // get max id
+    static addComment(connection, product_id, user_id, comment, rating, callback) {
+        // Check if the user has an existing comment for the product
+
+        //get max comment_id
         connection.query("SELECT MAX(comment_id) AS maxCommentId FROM comments", (err, result) => {
             if(err) throw err;
             const maxCommentId = result[0].maxCommentId;
             const newCommentId = maxCommentId + 1;
 
-            connection.query(`INSERT INTO comments (comment_id, product_id, user_id, comment, rating) 
-                VALUES (?,?,?,?,?)`, [newCommentId, product_id, user_id, comment, rating], (err, result) => {
-                if(err) throw err;
-                callback(result);
-            });
-        });
+        connection.query(
+
+            "SELECT comment_id FROM comments WHERE product_id = ? AND user_id = ?",
+            [product_id, user_id],
+            (err, existingCommentResult) => {
+                if (err) throw err;
+    
+                if (existingCommentResult.length > 0) {
+                    // User has an existing comment, delete it
+                    const existingCommentId = existingCommentResult[0].comment_id;
+                    connection.query(
+                        "DELETE FROM comments WHERE comment_id = ?",
+                        [existingCommentId],
+                        (deleteErr, deleteResult) => {
+                            if (deleteErr) throw deleteErr;
+    
+                            // Now, add the new comment
+                            connection.query(
+                                "INSERT INTO comments (comment_id, product_id, user_id, comment, rating) VALUES (?,?,?,?,?)",
+                                [newCommentId, product_id, user_id, comment, rating],
+                                (insertErr, insertResult) => {
+                                    if (insertErr) throw insertErr;
+    
+                                    callback(insertResult);
+                                }
+                            );
+                        }
+                    );
+                } else {
+                    // User does not have an existing comment, simply add the new comment
+                    connection.query(
+                        "INSERT INTO comments (comment_id, product_id, user_id, comment, rating) VALUES (?,?,?,?,?)",
+                        [newCommentId, product_id, user_id, comment, rating],
+                        (insertErr, insertResult) => {
+                            if (insertErr) throw insertErr;
+    
+                            callback(insertResult);
+                        }
+                    );
+                }
+            }
+        );
     }
+)};
+    
 
     // update comment
     static updateCommand(connection, comment_id, comment, rating, callback){
@@ -186,20 +228,23 @@ static filterById(connection, product_id, sort_option, callback) {
             orderByClause = 'ORDER BY rating ASC';
             break;
         default:
-            orderByClause = ''; // Default sorting order
+            orderByClause = 'ORDER BY comment_id DESC'; // Default sorting order
     }
 
     const query = `
         SELECT c.comment_id, 
-               COUNT(l.id) AS like_count,
-               COUNT(d.id) AS dislike_count,
-               AVG(c.rating) AS rating
-        FROM comments c
-        LEFT JOIN likes l ON c.comment_id = l.commentId
-        LEFT JOIN dislikes d ON c.comment_id = d.commentId
-        WHERE c.product_id = ?
-        GROUP BY c.comment_id
-        ${orderByClause};
+        c.comment,
+        u.name AS name,
+        COUNT(l.id) AS like_count,
+        COUNT(d.id) AS dislike_count,
+        AVG(c.rating) AS rating
+    FROM comments c
+    LEFT JOIN likes l ON c.comment_id = l.commentId
+    LEFT JOIN dislikes d ON c.comment_id = d.commentId
+    LEFT JOIN users u ON c.user_id = u.UserId
+    WHERE c.product_id = ?
+    GROUP BY c.comment_id, u.name
+    ${orderByClause};
     `;
 
     connection.query(query, [product_id], (err, result) => {
@@ -208,7 +253,14 @@ static filterById(connection, product_id, sort_option, callback) {
     });
 }
 
-
+// get total comments by product_id
+static getTotalCommentsByProductId(connection, product_id, callback) {
+    connection.query("SELECT COUNT(*) AS total_comments FROM comments WHERE product_id = ?", 
+        [product_id], (err, result) => {
+        if (err) throw err;
+        callback(result);
+    });
+}
     
     }
 
