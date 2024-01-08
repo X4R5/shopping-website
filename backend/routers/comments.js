@@ -99,4 +99,21 @@ router.get("/totalcomments/:id", (req, res) => {
     });
 });
 
+// POST endpoint to add a new adminReply by comment_id
+router.post("/reply/:id", authenticateToken, (req, res) => {
+    const comment_id = req.params.id;
+    const {adminReply} = req.body;
+    Comment.addAdminReply(connection, comment_id, adminReply, (result) => {
+        res.json(result);
+    });
+});
+
+// GET endpoint to get adminReply by comment_id
+router.get("/reply/:id", (req, res) => {
+    const comment_id = req.params.id;
+    Comment.getAdminReplyByCommentId(connection, comment_id, (result) => {
+        res.json(result);
+    });
+});
+
 module.exports = router;

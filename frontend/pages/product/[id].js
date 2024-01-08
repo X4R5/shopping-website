@@ -11,6 +11,7 @@ function ProductPage() {
   const router = useRouter();
   const { id } = router.query; 
 
+  const [rating, setRating] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   const [product, setProduct] = useState(null);
@@ -25,6 +26,31 @@ function ProductPage() {
   const [sortLikesDirection, setSortLikesDirection] = useState('desc');
   const [sortDislikesDirection, setSortDislikesDirection] = useState('desc');
 
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/${id}/`);
+      if (!response.ok) throw new Error('Network response was not ok.');
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const fetchAndSetRating = async () => {
+    try {
+      const updatedRating = await fetch(`http://localhost:3001/api/comments/${id}/rating`);
+        
+      if (!updatedRating.ok) {
+        throw new Error('Failed to fetch rating.');
+      }
+
+      const data = await updatedRating.json();
+      setRating(data[0].averageRating);
+    } catch (error) {
+      console.error('Error fetching rating:', error);
+    }
+  };
 
   useEffect(() => {
     if(id) {
@@ -43,37 +69,38 @@ function ProductPage() {
       };
 
       fetchProduct();
+      fetchAndSetRating();
     }
   }, [id]);
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/comments//${id}/`);
+        const response = await fetch(`http://localhost:3001/api/comments/${id}/`);
         if (!response.ok) throw new Error('Network response was not ok.');
         const data = await response.json();
         setComments(data);
       } catch (error) {
         setError(error.message);
       }
-    }
+    };
 
     const fetchCommentCount = async () => {
       try {
         const response = await fetch(`http://localhost:3001/api/comments/totalcomments/${id}`);
         if (!response.ok) throw new Error('Network response was not ok.');
         const data = await response.json();
-        setCommentCount(data[0].count);
+        setCommentCount(data[0].total_comments);
       } catch (error) {
         setError(error.message);
-      }}
-  
+      }
+    };
+
     if(id) {
       fetchComments();
       fetchCommentCount();
     }
   }, [id]);
-  
 
   const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -92,30 +119,28 @@ function ProductPage() {
       console.error('Sepete ekleme sırasında bir hata oluştu:', error);
       alert("Sepete ekleme sırasında bir hata oluştu.");
     }
-  }
-  
-  
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!product) return <div>Product not found!</div>;
 
   const renderStars = () => {
     let stars = [];
-    for (let i = 0; i < Math.floor(product.rating); i++) {
+    for (let i = 0; i < Math.floor(rating); i++) {
       stars.push(<FontAwesomeIcon key={`full${i}`} icon={faStar} style={{ color: 'orange' }} />);
     }
-    if (product.rating % 1 >= 0.5) {
+    if (rating % 1 >= 0.5) {
       stars.push(<FontAwesomeIcon key="half" icon={faStarHalfAlt} style={{ color: 'orange' }} />);
     }
     return stars;
   };
 
-
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity >= 1) {
       setQuantity(newQuantity);
     }
-  }
+  };
 
   const sortComments = (sortType) => {
     let sortedComments = [];
@@ -133,7 +158,7 @@ function ProductPage() {
         sortedComments = [...comments];
     }
     setComments(sortedComments);
-  }
+  };
 
   const fetchSortedComments = async (sortOption) => {
     let sortDirection;
@@ -156,7 +181,7 @@ function ProductPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/comments/${id}/sorted`, {
+      const response = await fetch(`http://localhost:3001/api/comments/filter/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,7 +198,6 @@ function ProductPage() {
     }
   };
 
-
   const postComment = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -183,19 +207,18 @@ function ProductPage() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ comment: newComment, rating: newRating }),
+        body: JSON.stringify({ product_id: id, comment: newComment, rating: newRating }),
       });
       if (!response.ok) throw new Error('Comment post failed.');
 
       setNewComment('');
       setNewRating(0);
-      fetchComments()
+      fetchComments();
     } catch (error) {
       console.error('Error posting comment:', error);
       alert("Error posting comment");
     }
-  }
-
+  };
 
   const handleAddToCompare = () => {
     const maxCompareItems = 2;
@@ -217,7 +240,6 @@ function ProductPage() {
       router.push('/compare');
     }
   };
-  
 
   return (
     <>
@@ -225,32 +247,27 @@ function ProductPage() {
       <Container className="my-5">
         <Row>
           <Col lg={6}>
-            {/* Ürün Resmi */}
             <Image src={product.product_image} alt={product.product_name} fluid />
           </Col>
           <Col lg={6} className="d-flex">
-            {/* Ürün Bilgileri */}
             <Card className="flex-grow-1 d-flex flex-column">
               <Card.Body className="d-flex flex-column justify-content-between">
                 <div>
                   <Card.Title>{product.product_name}</Card.Title>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
-                      {product.discountPrice ? 
-                      (
-                      <h5>Fiyat: <span className="text-muted text-decoration-line-through"></span>{product.product_price}<span className="text-success">{product.discountPrice}</span></h5>
-                      ) : 
-                      (
+                      {product.discountPrice ? (
+                        <h5>Fiyat: <span className="text-muted text-decoration-line-through"></span>{product.product_price}<span className="text-success">{product.discountPrice}</span></h5>
+                      ) : (
                         <h5>Fiyat: {product.product_price}</h5>
-                      )  
-                      }
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
-                        <div className='mr-2'>{product.rating} {renderStars()}</div>
+                        <div className='mr-2'>{rating} {renderStars()}</div>
                         <div className='mx-2'>{commentCount} Değerlendirme</div>
                       </div>
-                  </ListGroup.Item>
+                    </ListGroup.Item>
                   </ListGroup>
                 </div>
                 <div className="mt-auto">
@@ -271,43 +288,41 @@ function ProductPage() {
           </Col>
         </Row>
       </Container>
+      
+      <Card className="mx-5 my-3">
+        <Card.Body>
+          <Card.Title>Ürün Açıklaması</Card.Title>
+          <Card.Text>{product.product_desc}</Card.Text>
+        </Card.Body>
+      </Card>
+      
 
       <Card className="mx-5 my-3">
-      <Card.Body>
-        <Card.Title>Yeni Yorum Ekle</Card.Title>
-        <InputGroup className="mb-3">
-          <FormControl
-            as="textarea"
-            rows={3}
-            placeholder="Yorumunuzu buraya yazınız..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
-        </InputGroup>
-        <StarRating rating={newRating} setRating={setNewRating} />
-        <Button variant="primary" onClick={postComment}>Yorum Yap</Button>
-      </Card.Body>
-    </Card>
+        <Card.Body>
+          <Card.Title>Yeni Yorum Ekle</Card.Title>
+          <InputGroup className="mb-3">
+            <FormControl
+              as="textarea"
+              rows={3}
+              placeholder="Yorumunuzu buraya yazınız..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+            />
+          </InputGroup>
+          <StarRating rating={newRating} setRating={setNewRating} />
+          <Button variant="primary" onClick={postComment}>Yorum Yap</Button>
+        </Card.Body>
+      </Card>
 
-
-        {/* <Row className="justify-content-center my-3">
-          <ButtonGroup>
-            <Button variant="outline-secondary" onClick={() => sortComments('rating')}>Rating</Button>
-            <Button variant="outline-secondary" onClick={() => sortComments('likes')}>Likes</Button>
-            <Button variant="outline-secondary" onClick={() => sortComments('dislikes')}>Dislikes</Button>
-          </ButtonGroup>
-        </Row> */}
-
+      <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
         <Row className="justify-content-center my-3">
           <ButtonGroup>
-            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>Date</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>X</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('rating')}>Rating</Button>
-            <Button variant="outline-secondary" onClick={() => fetchSortedComments('likes')}>Likes</Button>
-            <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislikes')}>Dislikes</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('like')}>Likes</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislike')}>Dislikes</Button>
           </ButtonGroup>
         </Row>
-      {/* Comments Section */}
-      <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
         <Card.Body>
           <Card.Title className='my-2'>Ürün Yorumları ({commentCount})</Card.Title>
         </Card.Body>
@@ -318,13 +333,12 @@ function ProductPage() {
             user={{ name: comment.name, photo: '' }}
             rating={comment.rating}
             comment={comment.comment}
-            isAdmin = {localStorage.getItem('isAdmin')}
+            isAdmin={localStorage.getItem('isAdmin')}
           />
         ))}
       </Card>
     </>
   );
 }
-
 
 export default ProductPage;

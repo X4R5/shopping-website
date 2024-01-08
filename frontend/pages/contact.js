@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
 function ContactPage() {
   const [message, setMessage] = useState('');
-  const token = localStorage.getItem('token');
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    setToken(storedToken || '');
+  }, []); // This effect runs once, similar to componentDidMount
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +37,7 @@ function ContactPage() {
 
   return (
     <div>
-        <Navbar />
+      <Navbar />
       {token ? (
         <div>
           <h1>İletişim</h1>
@@ -51,9 +56,7 @@ function ContactPage() {
       ) : (
         <div>
           <p>İletişime geçmek için giriş yapınız.</p>
-          <Link href="/login">
-            <a>Giriş Yap</a>
-          </Link>
+          <Link href="/login">Giriş Yap</Link>
         </div>
       )}
     </div>

@@ -107,12 +107,12 @@ function CartPage() {
 
   const applyCoupon = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/coupons/validate/${coupon}`, {
+      const response = await fetch(`http://localhost:3001/api/orders/coupon`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ couponCode: coupon }),
       });
   
       if (!response.ok){
@@ -122,7 +122,7 @@ function CartPage() {
   
       const data = await response.json();
       setIsDiscountApplied(true);
-      setDiscountAmount(data.discountAmount);
+      setDiscountAmount(data[0].discount);
       alert("Kupon başarıyla uygulandı!");
   
     } catch (error) {

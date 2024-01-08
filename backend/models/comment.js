@@ -262,6 +262,23 @@ static getTotalCommentsByProductId(connection, product_id, callback) {
     });
 }
     
+// add a new adminReply to a comment by comment_id
+static addAdminReply(connection, comment_id, adminReply, callback) {
+    connection.query("UPDATE comments SET adminReply = ? WHERE comment_id = ?", 
+        [adminReply, comment_id], (err, result) => {
+        if (err) throw err;
+        callback(result);
+    });
+}
+
+// getAdminReplyByCommentId
+static getAdminReplyByCommentId(connection, comment_id, callback) {
+    connection.query("SELECT adminReply FROM comments WHERE comment_id = ?", 
+        [comment_id], (err, result) => {
+        if (err) throw err;
+        callback(result);
+    });
+}
     }
 
 module.exports = Comment;

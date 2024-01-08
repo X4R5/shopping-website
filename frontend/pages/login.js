@@ -26,7 +26,7 @@ function LoginPage() {
         console.log('Login successful:', data);
 
         localStorage.setItem('token', data.token);
-        if (data[0].isAdmin === true) {
+        if (data.isAdmin === true) {
           localStorage.setItem('isAdmin', true);
         }
 

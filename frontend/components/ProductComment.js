@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import { InputGroup, FormControl } from 'react-bootstrap';
 
 function ProductComment({ id, user, rating, comment, date, isAdmin }) {
 
@@ -20,11 +21,12 @@ function ProductComment({ id, user, rating, comment, date, isAdmin }) {
       if (updatedCommentData) {
         setLikes(updatedCommentData[0].likes);
         setDislikes(updatedCommentData[0].dislikes);
-        setExistingReply(updatedCommentData[0].adminReply || null);
       }
     };
 
     fetchAndSetCommentData();
+    fetchAdminReply();
+
   }, []);
 
   const handleAdminReply = async () => {
@@ -35,7 +37,7 @@ function ProductComment({ id, user, rating, comment, date, isAdmin }) {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ reply: adminReply }),
+        body: JSON.stringify({ adminReply: adminReply }),
       });
 
       if (!response.ok) throw new Error('Reply action failed.');
@@ -92,6 +94,27 @@ function ProductComment({ id, user, rating, comment, date, isAdmin }) {
       console.error('Error during dislike action:', error);
     }
   };
+
+  const fetchAdminReply = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/reply/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch reply.');
+
+      const data = await response.json();
+      setExistingReply(data[0].adminReply || null);
+    } catch (error) {
+      console.error('Error fetching comment:', error);
+      return null;
+    }
+  };
+
+
 
   const fetchComment = async () => {
     try {
@@ -171,36 +194,56 @@ function ProductComment({ id, user, rating, comment, date, isAdmin }) {
         </Card.Footer>
       </Card>
 
-      <Modal show={modalShow} onHide={() => setModalShow(false)} centered>
-        <Modal.Header closeButton>
-        </Modal.Header>
-        <Modal.Body>
-          
-        </Modal.Body>
-      </Modal>
+      {isAdmin && !existingReply && (
+      <Button variant="primary" onClick={() => setModalShow(true)}>
+        Cevapla
+      </Button>
+    )}
 
-      {isAdmin && (
-        <Card.Footer>
-          {existingReply ? (
-            <div>
-              <strong>Admin Response: </strong>
+      {existingReply && (
+            <div className="mt-3">
+              <h5>Cevap:</h5>
               <p>{existingReply}</p>
             </div>
-          ) : (
+          )}
+
+{isAdmin && (
+        <Modal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Cevapla</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
             <InputGroup className="mb-3">
               <FormControl
-                as="textarea"
-                placeholder="Yanıtınızı buraya yazınız..."
+                placeholder="Cevabınızı giriniz."
+                aria-label="Cevabınızı giriniz."
+                aria-describedby="basic-addon2"
                 value={adminReply}
                 onChange={(e) => setAdminReply(e.target.value)}
               />
-              <InputGroup.Append>
-                <Button variant="outline-secondary" onClick={handleAdminReply}>Yanıtla</Button>
-              </InputGroup.Append>
+              <Button variant="outline-secondary" id="button-addon2" onClick={handleAdminReply}>
+                Gönder
+              </Button>
             </InputGroup>
-          )}
-        </Card.Footer>
+            {existingReply && (
+              <div className="mt-3">
+                <h5>Cevap:</h5>
+                <p>{existingReply}</p>
+              </div>
+            )}
+          </Modal.Body>
+        </Modal>
       )}
+
+
+       
+
     </>
   );
 }

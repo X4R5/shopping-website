@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 
-import { useState, useEffect } from 'react';
-
 
 function ComparePage() {
     const [products, setProducts] = useState([]);
@@ -29,7 +27,7 @@ function ComparePage() {
             savedIds.map(async (id) => {
                 const response = await fetch(`http://localhost:3001/api/comments/totalcomments/${id}`);
                 const comments = await response.json();
-                return comments[0].count;
+                return comments[0].total_comments;
             })
         );
         setCommentCounts(fetchedCommentCounts);
@@ -40,7 +38,15 @@ function ComparePage() {
             savedIds.map(async (id) => {
                 const response = await fetch(`http://localhost:3001/api/comments/${id}/rating`);
                 const ratings = await response.json();
-                return ratings[0];
+                let rating = 0;
+                if(ratings[0].averageRating !== null){
+                    rating = ratings[0].averageRating;
+                }
+                else{
+                    rating = 0;
+                }
+                console.log(rating)
+                return rating;
             })
         );
         setRatings(fetchedRatings);
@@ -50,6 +56,7 @@ function ComparePage() {
         fetchProducts();
         fetchCommentCounts();
         fetchRatings();
+        localStorage.removeItem('compareList');
     }
   }, []);
 
@@ -62,11 +69,11 @@ function ComparePage() {
           {products.map((product, index) => (
             <div key={product.id} className="d-flex col justify-content-center align-items-center">
                 <h2>{index + 1}. {product.product_name}</h2>
-                <img src={product.image} alt={product.name} />
+                <img src={product.product_image} alt={product.product_name} />
                 <p>Price: {product.product_price}</p>
                 <p>Rating: {ratings[index]}</p>
                 <p>Number of Reviews: {commentCounts[index]}</p>
-                <p>Description: {product.description}</p>
+                <p>Description: {product.product_desc}</p>
                 <hr />
 
             </div>
