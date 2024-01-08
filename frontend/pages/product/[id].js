@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import ProductComment from '../../components/ProductComment';
 import Navbar from '../../components/Navbar';
+import StarRating from '../../components/StarRating';
 
 function ProductPage() {
   const router = useRouter();
@@ -17,17 +18,13 @@ function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
+  const [newComment, setNewComment] = useState('');
+  const [newRating, setNewRating] = useState(0);
 
-
-  // const product1 = {
-  //   product_name: 'Xiaomi Mi Robot Vacuum Mop 2 Pro',
-  //   price: '8.999,00 TL',
-  //   discountPrice: '8.599,00 TL',
-  //   product_desc: 'Akıllı Robot Süpürge - Siyah',
-  //   product_image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-  //   rating: 4.7,
-  //   reviews: 1984,
-  // };
+  const [sortRatingDirection, setSortRatingDirection] = useState('desc');
+  const [sortLikesDirection, setSortLikesDirection] = useState('desc');
+  const [sortDislikesDirection, setSortDislikesDirection] = useState('desc');
 
   const fetchComments = async () => {
     try {
@@ -77,9 +74,32 @@ function ProductPage() {
   }, [id]);
 
   useEffect(() => {
+
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/comments//${id}/`);
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const data = await response.json();
+        setComments(data);
+      } catch (error) {
+        setError(error.message);
+      }
+    }
+
+    const fetchCommentCount = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/comments/totalcomments/${id}`);
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const data = await response.json();
+        setCommentCount(data[0].count);
+      } catch (error) {
+        setError(error.message);
+      }}
+
   
     if(id) {
       fetchComments();
+      fetchCommentCount();
     }
   }, [id]);
   
@@ -104,22 +124,6 @@ function ProductPage() {
   }
   
   
-
-
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     try {
-  //       setProduct(product1);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error.message);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchProduct();
-  // }, []);
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!product) return <div>Product not found!</div>;
@@ -144,8 +148,7 @@ function ProductPage() {
     }
   }
 
-<<<<<<< Updated upstream
-=======
+
   const sortComments = (sortType) => {
     let sortedComments = [];
     switch(sortType) {
@@ -185,7 +188,10 @@ function ProductPage() {
     }
 
     try {
+
       const response = await fetch(`http://localhost:3001/api/comments/filter/${id}`, {
+
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -212,7 +218,9 @@ function ProductPage() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+
         body: JSON.stringify({product_id: id, comment: newComment, rating: newRating }),
+
       });
       if (!response.ok) throw new Error('Comment post failed.');
 
@@ -248,7 +256,7 @@ function ProductPage() {
   };
   
 
->>>>>>> Stashed changes
+
   return (
     <>
       <Navbar />
@@ -266,24 +274,31 @@ function ProductPage() {
                   <Card.Title>{product.product_name}</Card.Title>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
-                      <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.product_price}</span> <span className="text-success">{product.discountPrice}</span></h5>
+                      {product.discountPrice ? 
+                      (
+                      <h5>Fiyat: <span className="text-muted text-decoration-line-through"></span>{product.product_price}<span className="text-success">{product.discountPrice}</span></h5>
+                      ) : 
+                      (
+                        <h5>Fiyat: {product.product_price}</h5>
+                      )  
+                      }
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
-<<<<<<< Updated upstream
-                        {/* <div className='mr-2'>{product.rating} {renderStars()}</div> */}
-=======
+
                         <div className='mr-2'>{rating} {renderStars()}</div>
->>>>>>> Stashed changes
-                        {/* <div className='mx-2'>{product.reviews} Değerlendirme</div> */}
+
+                    
+
+                        <div className='mx-2'>{commentCount} Değerlendirme</div>
+
                       </div>
                   </ListGroup.Item>
                   </ListGroup>
                 </div>
                 <div className="mt-auto">
                   <div className="d-flex justify-content-around my-3">
-                    <Button variant="outline-secondary" size="md">Listeme Ekle</Button>
-                    <Button variant="outline-secondary" size="md">Karşılaştır</Button>
+                    <Button variant="outline-secondary" size="md" onClick={handleAddToCompare}>Karşılaştır</Button>
                   </div>
                   <div className='d-flex flex-row align-items-center justify-content-center'>
                     <InputGroup className="w-25 mx-3">
@@ -300,16 +315,26 @@ function ProductPage() {
         </Row>
       </Container>
 
-       <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
-          <Card.Body>
-            <Card.Title className='my-2'>Ürün Açıklaması</Card.Title>
-            <Card.Text className='my-3'>{product.product_desc}</Card.Text>
-          </Card.Body>
-        </Card>
+      <Card className="mx-5 my-3">
+      <Card.Body>
+        <Card.Title>Yeni Yorum Ekle</Card.Title>
+        <InputGroup className="mb-3">
+          <FormControl
+            as="textarea"
+            rows={3}
+            placeholder="Yorumunuzu buraya yazınız..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+        </InputGroup>
+        <StarRating rating={newRating} setRating={setNewRating} />
+        <Button variant="primary" onClick={postComment}>Yorum Yap</Button>
+      </Card.Body>
+    </Card>
 
-<<<<<<< Updated upstream
+
         <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
-=======
+
 
         {/* <Row className="justify-content-center my-3">
           <ButtonGroup>
@@ -321,31 +346,35 @@ function ProductPage() {
 
         <Row className="justify-content-center my-3">
           <ButtonGroup>
+
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>X</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('rating')}>Rating</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('like')}>Likes</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislike')}>Dislikes</Button>
+
+
           </ButtonGroup>
         </Row>
       {/* Comments Section */}
       <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
->>>>>>> Stashed changes
+
         <Card.Body>
-            <Card.Title className='my-2'>Ürün Yorumları</Card.Title>
-          </Card.Body>
-          {comments.map(comment => (
+          <Card.Title className='my-2'>Ürün Yorumları ({commentCount})</Card.Title>
+        </Card.Body>
+        {comments.map(comment => (
           <ProductComment
             key={comment.comment_id}
             id={comment.comment_id}
             user={{ name: comment.name, photo: '' }}
             rating={comment.rating}
             comment={comment.comment}
+            isAdmin = {localStorage.getItem('isAdmin')}
           />
         ))}
-
-        </Card>
+      </Card>
     </>
   );
 }
+
 
 export default ProductPage;

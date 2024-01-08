@@ -26,6 +26,9 @@ function LoginPage() {
         console.log('Login successful:', data);
 
         localStorage.setItem('token', data.token);
+        if (data[0].isAdmin === true) {
+          localStorage.setItem('isAdmin', true);
+        }
 
         setLoginStatus('Kayıt başarılı, anasayfaya yönlendiriliyorsunuz.');
 

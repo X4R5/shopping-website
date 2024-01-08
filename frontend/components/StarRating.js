@@ -1,5 +1,7 @@
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
+
 
 function StarRating({ rating, setRating }) {
     const changeRating = (newRating) => {
