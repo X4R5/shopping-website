@@ -185,8 +185,8 @@ function ProductPage() {
           </Card.Body>
           {comments.map(comment => (
           <ProductComment
-            key={comment.id}
-            id={comment.id}
+            key={comment.comment_id}
+            id={comment.comment_id}
             user={{ name: comment.name, photo: '' }}
             rating={comment.rating}
             comment={comment.comment}

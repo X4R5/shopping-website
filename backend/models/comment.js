@@ -84,6 +84,81 @@ class Comment{
             callback(result);
         });
     }
+
+  // Like comment by id and user_id
+static likeComment(connection, user_id, comment_id, callback) {
+    connection.query("SELECT * FROM likes WHERE userId = ? AND commentId = ?", 
+        [user_id, comment_id], (err, likeRows) => {
+        if (err) throw err;
+
+        // Delete existing like if it exists
+        if (likeRows.length > 0) {
+            connection.query("DELETE FROM likes WHERE userId = ? AND commentId = ?", 
+                [user_id, comment_id], (err, result) => {
+                if (err) throw err;
+                callback(result);
+            });
+        } else {
+            // Check if user disliked the comment, delete the dislike
+            connection.query("DELETE FROM dislikes WHERE userId = ? AND commentId = ?", 
+                [user_id, comment_id], (err, result) => {
+                if (err) throw err;
+
+                // Add like after deleting the dislike
+                connection.query("INSERT INTO likes (userId, commentId) VALUES (?,?)", 
+                    [user_id, comment_id], (err, result) => {
+                    if (err) throw err;
+                    callback(result);
+                });
+            });
+        }
+    });
+}
+
+// Dislike comment by id and user_id
+static dislikeComment(connection, user_id, comment_id, callback) {
+    connection.query("SELECT * FROM dislikes WHERE userId = ? AND commentId = ?", 
+        [user_id, comment_id], (err, dislikeRows) => {
+        if (err) throw err;
+
+        // Delete existing dislike if it exists
+        if (dislikeRows.length > 0) {
+            connection.query("DELETE FROM dislikes WHERE userId = ? AND commentId = ?", 
+                [user_id, comment_id], (err, result) => {
+                if (err) throw err;
+                callback(result);
+            });
+        } else {
+            // Check if user liked the comment, delete the like
+            connection.query("DELETE FROM likes WHERE userId = ? AND commentId = ?", 
+                [user_id, comment_id], (err, result) => {
+                if (err) throw err;
+
+                // Add dislike after deleting the like
+                connection.query("INSERT INTO dislikes (userId, commentId) VALUES (?,?)", 
+                    [user_id, comment_id], (err, result) => {
+                    if (err) throw err;
+                    callback(result);
+                });
+            });
+        }
+    });
+}
+
+// get total like and dislike by comment_id
+static getLikesDislikesByCommentId(connection, comment_id, callback){
+    const query = `
+        SELECT 
+            (SELECT COUNT(*) FROM likes WHERE commentId = ?) AS likes,
+            (SELECT COUNT(*) FROM dislikes WHERE commentId = ?) AS dislikes
+    `;
+
+    connection.query(query, [comment_id, comment_id], (err, result) => {
+        if(err) throw err;
+        callback(result);
+    });
+
+}
 }
 
 module.exports = Comment;
