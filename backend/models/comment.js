@@ -1,3 +1,5 @@
+const { query } = require("express");
+
 class Comment{
     // comment_id product_id user_id comment rating
     constructor(comment_id, product_id, user_id, comment, rating){
@@ -159,6 +161,55 @@ static getLikesDislikesByCommentId(connection, comment_id, callback){
     });
 
 }
+
+// filter comments
+static filterById(connection, product_id, sort_option, callback) {
+    let orderByClause;
+
+    switch (sort_option) {
+        case 'like_desc':
+            orderByClause = 'ORDER BY like_count DESC';
+            break;
+        case 'like_ascend':
+            orderByClause = 'ORDER BY like_count ASC';
+            break;
+        case 'dislike_desc':
+            orderByClause = 'ORDER BY dislike_count DESC';
+            break;
+        case 'dislike_ascend':
+            orderByClause = 'ORDER BY dislike_count ASC';
+            break;
+        case 'rating_desc':
+            orderByClause = 'ORDER BY rating DESC';
+            break;
+        case 'rating_ascend':
+            orderByClause = 'ORDER BY rating ASC';
+            break;
+        default:
+            orderByClause = ''; // Default sorting order
+    }
+
+    const query = `
+        SELECT c.comment_id, 
+               COUNT(l.id) AS like_count,
+               COUNT(d.id) AS dislike_count,
+               AVG(c.rating) AS rating
+        FROM comments c
+        LEFT JOIN likes l ON c.comment_id = l.commentId
+        LEFT JOIN dislikes d ON c.comment_id = d.commentId
+        WHERE c.product_id = ?
+        GROUP BY c.comment_id
+        ${orderByClause};
+    `;
+
+    connection.query(query, [product_id], (err, result) => {
+        if (err) throw err;
+        callback(result);
+    });
 }
+
+
+    
+    }
 
 module.exports = Comment;

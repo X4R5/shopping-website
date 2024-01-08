@@ -82,4 +82,13 @@ router.post("/dislike/:id", authenticateToken, (req, res) => {
     }
 );
 
+// filter comments
+router.post("/filter/:id", (req, res) => {
+    const {sort_option} = req.body;
+    const product_id = req.params.id;
+    Comment.filterById(connection, product_id, sort_option, (result) => {
+        res.json(result);
+    });
+});
+
 module.exports = router;
