@@ -6,7 +6,6 @@ const usersRouter = require("./routers/users");
 const commentsRouter = require("./routers/comments");
 const {connection} = require("./database");
 const orderRouter = require("./routers/orders");
-const loginRouter = require("./routers/login");
 const errorHandler = require("./helpers/error-handler");
 const cors = require("cors");
 const app = express();
@@ -22,7 +21,6 @@ app.use(errorHandler)
 app.use('/api/products', productsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/comments', commentsRouter);
-app.use('/api/users/login', loginRouter);
 app.use('/api/orders', orderRouter);
 
 

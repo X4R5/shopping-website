@@ -4,13 +4,18 @@ const {connection} = require("../database");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const authenticateToken = require("../helpers/jwt");
 const router = express.Router();
 
-router.post("/", (req, res) => {
+
+// User login
+router.post("/", authenticateToken, (req, res) => {
     let { email, password } = req.body;
     User.login(connection, email, (result) => {
         if (result.length > 0) {
             const user = result[0];
+            const admin = req.user.isAdmin;
+            console.log(admin)
             const isPasswordCorrect = bcrypt.compareSync(password, user.password);
             if (isPasswordCorrect) {
                 // User is logged in
@@ -32,5 +37,8 @@ router.post("/", (req, res) => {
         }
     });
 });
+
+
+
 
 module.exports = router;
