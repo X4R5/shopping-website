@@ -1,6 +1,7 @@
 const express = require("express");
 const Comment = require("../models/comment");
 const {connection} = require("../database");
+const authenticateToken = require("../helpers/jwt");
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -24,8 +25,9 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
-    const {product_id, user_id, comment, rating} = req.body;
+router.post('/', authenticateToken, (req, res) => {
+    const {product_id, comment, rating} = req.body;
+    const user_id = req.user.id;
     Comment.addComment(connection, product_id, user_id, comment, rating, (result) => {
         res.json(result);
     });
@@ -53,5 +55,31 @@ router.get('/:product_id/rating', (req, res) => {
     });
 });
 
+// like comment by id and user_id
+router.post("/like/:id", authenticateToken, (req, res) => {
+    const comment_id = req.params.id;
+    const user_id = req.user.id;
+    Comment.likeComment(connection, user_id, comment_id, (result) => {
+        res.json(result);
+    });
+});
+
+// dislike comment by id and user_id
+router.post("/dislike/:id", authenticateToken, (req, res) => {
+    const comment_id = req.params.id;
+    const user_id = req.user.id;
+    Comment.dislikeComment(connection, user_id, comment_id, (result) => {
+        res.json(result);
+    });
+});
+
+ // get total likes and dislikes by comment_id
+    router.get("/total/:id", (req, res) => {
+        const comment_id = req.params.id;
+        Comment.getLikesDislikesByCommentId(connection, comment_id, (result) => {
+            res.json(result);
+        });
+    }
+);
 
 module.exports = router;

@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ColorfulLine from './ColorfulLine';
 import NavbarCategories from './NavbarCategories';
-import { Link } from 'react-router-dom';
 
 function Navbar() {
-  // Check if the token is present in local storage
-  const isLoggedIn = !!localStorage.getItem('token');
+  const [isLoggedIn, setIsLoggedIn] =   useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+
+  const handleLoginRedirect = () => {
+    window.location.href = '/login';
+  }
+
+  const handleProfileRedirect = () => {
+    window.location.href = '/profile';
+  }
+
+  const handleCartRedirect = () => {
+    window.location.href = '/cart';
+  }
+
+
+  
 
   return (
     <div className="mb-3">
@@ -25,21 +44,20 @@ function Navbar() {
               </li>
             </ul>
             <div className="ml-auto">
-              {isLoggedIn ? (
-                <>
-                <Link href={`/profile/`} passHref>
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1">Sepet</button>
-                </Link>
+            {isLoggedIn ? (
+              <>
+                  
+                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleCartRedirect}>Sepet</button>
+                 
 
-                <Link href={`/cart/`} passHref>
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1">Profilim</button>
-                </Link>
-                </>
+                 
+                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleProfileRedirect}>Profilim</button>
+                  
+              </>
               ) : (
-                <Link href={`/login/`} passHref>
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3">Giriş Yap</button>
-                </Link>
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3" onClick={handleLoginRedirect}>Giriş Yap</button>
               )}
+
             </div>
           </div>
         </div>
