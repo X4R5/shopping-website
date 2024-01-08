@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import ProductComment from '../../components/ProductComment';
 import Navbar from '../../components/Navbar';
+import StarRating from '../../components/StarRating';
 
 function ProductPage() {
   const router = useRouter();
@@ -16,18 +17,8 @@ function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
-
-
-  // const product1 = {
-  //   product_name: 'Xiaomi Mi Robot Vacuum Mop 2 Pro',
-  //   price: '8.999,00 TL',
-  //   discountPrice: '8.599,00 TL',
-  //   product_desc: 'Akıllı Robot Süpürge - Siyah',
-  //   product_image: 'https://parcs.org.au/wp-content/uploads/2016/03/placeholder-image-red-1.png',
-  //   rating: 4.7,
-  //   reviews: 1984,
-  // };
-
+  const [newComment, setNewComment] = useState('');
+  const [newRating, setNewRating] = useState(0);
 
   useEffect(() => {
     if(id) {
@@ -87,22 +78,6 @@ function ProductPage() {
   }
   
   
-
-
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     try {
-  //       setProduct(product1);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error.message);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchProduct();
-  // }, []);
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!product) return <div>Product not found!</div>;
@@ -125,6 +100,69 @@ function ProductPage() {
     }
   }
 
+  const sortComments = (sortType) => {
+    let sortedComments = [];
+    switch(sortType) {
+      case 'rating':
+        sortedComments = [...comments].sort((a, b) => b.rating - a.rating);
+        break;
+      case 'likes':
+        sortedComments = [...comments].sort((a, b) => b.likes - a.likes);
+        break;
+      case 'dislikes':
+        sortedComments = [...comments].sort((a, b) => b.dislikes - a.dislikes);
+        break;
+      default:
+        sortedComments = [...comments];
+    }
+    setComments(sortedComments);
+  }
+
+  const fetchSortedComments = async (sortOption) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/${id}/sorted`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include authorization token if your API requires
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ sortOption: sortOption }), // send sortOption in the request body
+      });
+      if (!response.ok) throw new Error('Failed to fetch sorted comments.');
+
+      const sortedComments = await response.json();
+      setComments(sortedComments); // Update comments with the sorted list
+    } catch (error) {
+      console.error('Error fetching sorted comments:', error);
+      setError(error.message);
+    }
+  }
+
+
+  const postComment = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/comments/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ comment: newComment, rating: newRating }),
+      });
+      if (!response.ok) throw new Error('Comment post failed.');
+
+      setNewComment('');
+      setNewRating(0);
+      fetchComments()
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      alert("Error posting comment");
+    }
+  }
+
+
   return (
     <>
       <Navbar />
@@ -142,11 +180,18 @@ function ProductPage() {
                   <Card.Title>{product.product_name}</Card.Title>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
-                      <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.product_price}</span> <span className="text-success">{product.discountPrice}</span></h5>
+                      {product.discountPrice ? 
+                      (
+                      <h5>Fiyat: <span className="text-muted text-decoration-line-through"></span>{product.product_price}<span className="text-success">{product.discountPrice}</span></h5>
+                      ) : 
+                      (
+                        <h5>Fiyat: {product.product_price}</h5>
+                      )  
+                      }
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
-                        {/* <div className='mr-2'>{product.rating} {renderStars()}</div> */}
+                        <div className='mr-2'>{product.rating} {renderStars()}</div>
                         {/* <div className='mx-2'>{product.reviews} Değerlendirme</div> */}
                       </div>
                   </ListGroup.Item>
@@ -172,18 +217,46 @@ function ProductPage() {
         </Row>
       </Container>
 
-       <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
-          <Card.Body>
-            <Card.Title className='my-2'>Ürün Açıklaması</Card.Title>
-            <Card.Text className='my-3'>{product.product_desc}</Card.Text>
-          </Card.Body>
-        </Card>
+      <Card className="mx-5 my-3">
+      <Card.Body>
+        <Card.Title>Yeni Yorum Ekle</Card.Title>
+        <InputGroup className="mb-3">
+          <FormControl
+            as="textarea"
+            rows={3}
+            placeholder="Yorumunuzu buraya yazınız..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+        </InputGroup>
+        <StarRating rating={newRating} setRating={setNewRating} />
+        <Button variant="primary" onClick={postComment}>Yorum Yap</Button>
+      </Card.Body>
+    </Card>
 
-        <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
+
+        {/* <Row className="justify-content-center my-3">
+          <ButtonGroup>
+            <Button variant="outline-secondary" onClick={() => sortComments('rating')}>Rating</Button>
+            <Button variant="outline-secondary" onClick={() => sortComments('likes')}>Likes</Button>
+            <Button variant="outline-secondary" onClick={() => sortComments('dislikes')}>Dislikes</Button>
+          </ButtonGroup>
+        </Row> */}
+
+        <Row className="justify-content-center my-3">
+          <ButtonGroup>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>Rating</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('rating')}>Rating</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('likes')}>Likes</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislikes')}>Dislikes</Button>
+          </ButtonGroup>
+        </Row>
+      {/* Comments Section */}
+      <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
         <Card.Body>
-            <Card.Title className='my-2'>Ürün Yorumları</Card.Title>
-          </Card.Body>
-          {comments.map(comment => (
+          <Card.Title className='my-2'>Ürün Yorumları</Card.Title>
+        </Card.Body>
+        {comments.map(comment => (
           <ProductComment
             key={comment.comment_id}
             id={comment.comment_id}
@@ -192,10 +265,10 @@ function ProductPage() {
             comment={comment.comment}
           />
         ))}
-
-        </Card>
+      </Card>
     </>
   );
 }
+
 
 export default ProductPage;
