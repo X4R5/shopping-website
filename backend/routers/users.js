@@ -77,7 +77,6 @@ router.post("/login", (req, res) => {
                         auth: true,
                         token: token,
                         message: "User is logged in",
-                        isAdmin: false
                     });
                 }
             } else {

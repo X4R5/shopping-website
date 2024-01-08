@@ -91,4 +91,12 @@ router.post("/filter/:id", (req, res) => {
     });
 });
 
+// get endpoint to get total comments by product_id
+router.get("/totalcomments/:id", (req, res) => {
+    const product_id = req.params.id;
+    Comment.getTotalCommentsByProductId(connection, product_id, (result) => {
+        res.json(result);
+    });
+});
+
 module.exports = router;

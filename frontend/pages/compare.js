@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 
+import { useState, useEffect } from 'react';
+
+
 function ComparePage() {
     const [products, setProducts] = useState([]);
     const [commentCounts, setCommentCounts] = useState([]);
     const [ratings, setRatings] = useState([]);
 
     useEffect(() => {
+
         const savedIds = JSON.parse(localStorage.getItem('compareList')) || [];
 
         const fetchProducts = async () => {
@@ -64,6 +68,7 @@ function ComparePage() {
                 <p>Number of Reviews: {commentCounts[index]}</p>
                 <p>Description: {product.description}</p>
                 <hr />
+
             </div>
           ))}
         </div>
