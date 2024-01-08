@@ -10,6 +10,7 @@ function ProductPage() {
   const router = useRouter();
   const { id } = router.query; 
 
+  const [rating, setRating] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   const [product, setProduct] = useState(null);
@@ -28,6 +29,31 @@ function ProductPage() {
   //   reviews: 1984,
   // };
 
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments//${id}/`);
+      if (!response.ok) throw new Error('Network response was not ok.');
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const fetchAndSetRating = async () => {
+    try {
+        const updatedRating = await fetch(`http://localhost:3001/api/comments/${id}/rating`);
+        
+        if (!updatedRating.ok) {
+            throw new Error('Failed to fetch rating.');
+        }
+
+        const data = await updatedRating.json();
+        setRating(data[0].averageRating);
+    } catch (error) {
+        console.error('Error fetching rating:', error);
+    }
+};
 
   useEffect(() => {
     if(id) {
@@ -46,20 +72,11 @@ function ProductPage() {
       };
 
       fetchProduct();
+      fetchAndSetRating();
     }
   }, [id]);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch(`http://localhost:3001/api/comments//${id}/`);
-        if (!response.ok) throw new Error('Network response was not ok.');
-        const data = await response.json();
-        setComments(data);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
   
     if(id) {
       fetchComments();
@@ -109,14 +126,16 @@ function ProductPage() {
 
   const renderStars = () => {
     let stars = [];
-    for (let i = 0; i < Math.floor(product.rating); i++) {
+    for (let i = 0; i < Math.floor(rating); i++) {
       stars.push(<FontAwesomeIcon key={`full${i}`} icon={faStar} style={{ color: 'orange' }} />);
     }
-    if (product.rating % 1 >= 0.5) {
+    if (rating % 1 >= 0.5) {
       stars.push(<FontAwesomeIcon key="half" icon={faStarHalfAlt} style={{ color: 'orange' }} />);
     }
     return stars;
   };
+
+
 
 
   const handleQuantityChange = (newQuantity) => {
@@ -125,6 +144,111 @@ function ProductPage() {
     }
   }
 
+<<<<<<< Updated upstream
+=======
+  const sortComments = (sortType) => {
+    let sortedComments = [];
+    switch(sortType) {
+      case 'rating':
+        sortedComments = [...comments].sort((a, b) => b.rating - a.rating);
+        break;
+      case 'likes':
+        sortedComments = [...comments].sort((a, b) => b.likes - a.likes);
+        break;
+      case 'dislikes':
+        sortedComments = [...comments].sort((a, b) => b.dislikes - a.dislikes);
+        break;
+      default:
+        sortedComments = [...comments];
+    }
+    setComments(sortedComments);
+  }
+
+  const fetchSortedComments = async (sortOption) => {
+    let sortDirection;
+
+    switch(sortOption) {
+      case 'rating':
+        sortDirection = sortRatingDirection;
+        setSortRatingDirection(sortRatingDirection === 'desc' ? 'ascend' : 'desc');
+        break;
+      case 'like':
+        sortDirection = sortLikesDirection;
+        setSortLikesDirection(sortLikesDirection === 'desc' ? 'ascend' : 'desc');
+        break;
+      case 'dislike':
+        sortDirection = sortDislikesDirection;
+        setSortDislikesDirection(sortDislikesDirection === 'desc' ? 'ascend' : 'desc');
+        break;
+      default:
+        // Default direction or handling
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/comments/filter/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sort_option: sortOption + "_" + sortDirection  }),
+      });
+      if (!response.ok) throw new Error('Failed to fetch sorted comments.');
+
+      const sortedComments = await response.json();
+      setComments(sortedComments);
+    } catch (error) {
+      console.error('Error fetching sorted comments:', error);
+      setError(error.message);
+    }
+  };
+
+
+  const postComment = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/comments/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({product_id: id, comment: newComment, rating: newRating }),
+      });
+      if (!response.ok) throw new Error('Comment post failed.');
+
+      setNewComment('');
+      setNewRating(0);
+      fetchComments()
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      alert("Error posting comment");
+    }
+  }
+
+
+  const handleAddToCompare = () => {
+    const maxCompareItems = 2;
+    let compareList = JSON.parse(localStorage.getItem('compareList')) || [];
+  
+    if (!compareList.includes(id)) {
+      if (compareList.length < maxCompareItems) {
+        compareList.push(id);
+        localStorage.setItem('compareList', JSON.stringify(compareList));
+        alert("Ürün karşılaştırmaya eklendi!");
+      } else {
+        alert("En fazla 2 ürün karşılaştırabilirsiniz!");
+      }
+    } else {
+      alert("Ürün zaten karşılaştırmada!");
+    }
+  
+    if (compareList.length >= 2) {
+      router.push('/compare');
+    }
+  };
+  
+
+>>>>>>> Stashed changes
   return (
     <>
       <Navbar />
@@ -146,7 +270,11 @@ function ProductPage() {
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <div className="list-group-flush d-flex justify-content-start align-items-center">
+<<<<<<< Updated upstream
                         {/* <div className='mr-2'>{product.rating} {renderStars()}</div> */}
+=======
+                        <div className='mr-2'>{rating} {renderStars()}</div>
+>>>>>>> Stashed changes
                         {/* <div className='mx-2'>{product.reviews} Değerlendirme</div> */}
                       </div>
                   </ListGroup.Item>
@@ -179,7 +307,29 @@ function ProductPage() {
           </Card.Body>
         </Card>
 
+<<<<<<< Updated upstream
         <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
+=======
+
+        {/* <Row className="justify-content-center my-3">
+          <ButtonGroup>
+            <Button variant="outline-secondary" onClick={() => sortComments('rating')}>Rating</Button>
+            <Button variant="outline-secondary" onClick={() => sortComments('likes')}>Likes</Button>
+            <Button variant="outline-secondary" onClick={() => sortComments('dislikes')}>Dislikes</Button>
+          </ButtonGroup>
+        </Row> */}
+
+        <Row className="justify-content-center my-3">
+          <ButtonGroup>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>X</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('rating')}>Rating</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('like')}>Likes</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislike')}>Dislikes</Button>
+          </ButtonGroup>
+        </Row>
+      {/* Comments Section */}
+      <Card className="mx-5 my-3" style={{ minHeight: '200px' }}>
+>>>>>>> Stashed changes
         <Card.Body>
             <Card.Title className='my-2'>Ürün Yorumları</Card.Title>
           </Card.Body>

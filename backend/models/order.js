@@ -68,6 +68,14 @@ class Order{
         });
     }
     
+    // check for coupon code and return discount
+    static checkCoupon(connection, couponCode, callback){
+        connection.query("SELECT * FROM coupons WHERE couponCode = ?", [couponCode], (err, result) => {
+            if(err) throw err;
+            callback(result);
+        });
+    }
+
 }
 
 module.exports = Order;
