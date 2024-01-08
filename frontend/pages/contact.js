@@ -9,20 +9,21 @@ function ContactPage() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/contact', {
+      const response = await fetch('http://localhost:3001/api/users/information', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ text: message }),
       });
 
       if (!response.ok) throw new Error('Failed to send message.');
 
       const result = await response.json();
-      alert('Message sent successfully!');
-      setMessage(''); // Clear the message field
+      alert('Mesaj gönderildi!');
+      setMessage('');
+      window.location.href = '/';
     } catch (error) {
       console.error('Failed to send message:', error);
       alert(error.message);
@@ -34,7 +35,7 @@ function ContactPage() {
         <Navbar />
       {token ? (
         <div>
-          <h1>Contact Us</h1>
+          <h1>İletişim</h1>
           <form onSubmit={handleFormSubmit}>
             <textarea
               value={message}
@@ -44,7 +45,7 @@ function ContactPage() {
               required
             ></textarea>
             <br />
-            <button type="submit">Send Message</button>
+            <button type="submit" className='btn btn-orange'>Mesajı Gönder</button>
           </form>
         </div>
       ) : (
