@@ -4,34 +4,43 @@ const jwt = require('jsonwebtoken');
 const authenticateToken = (req, res, next) => {
     // Get the token from the Authorization header
     const authHeader = req.headers.authorization;
-  
+
     if (!authHeader) {
-      return res.status(401).json({ error: 'Unauthorized - Missing Authorization header' });
+        return res.status(401).json({ error: 'Unauthorized - Missing Authorization header' });
     }
-  
+
     // Token format: Bearer <token>
     const [bearer, token] = authHeader.split(' ');
-  
+
     if (bearer !== 'Bearer' || !token) {
-      return res.status(401).json({ error: 'Unauthorized - Invalid Authorization header format' });
+        return res.status(401).json({ error: 'Unauthorized - Invalid Authorization header format' });
     }
-  
+
     // Verify the JWT token
     jwt.verify(token, 'KTU-1955', (err, decoded) => {
-      if (err) {
-        // Handle token verification error
-        console.error('Token verification error:', err.message);
-        return res.status(401).json({ error: 'Unauthorized - Invalid token' });
-      }
-  
-      // Add the decoded payload to the request object for later use
-      req.user = decoded;
-  
-      // Continue to the next middleware or route handler
-      next();
+        if (err) {
+            // Handle token verification error
+            console.error('Token verification error:', err.message);
+            return res.status(401).json({ error: 'Unauthorized - Invalid token' });
+        }
+
+        // Add the decoded payload to the request object for later use
+        req.user = decoded;
+
+        // Continue to the next middleware or route handler
+        next();
     });
-  };
+};
 
+// Middleware for excluding certain routes from token verification
+const excludeRoutes = (paths, middleware) => {
+    return (req, res, next) => {
+        if (paths.includes(req.path)) {
+            return next();
+        } else {
+            return middleware(req, res, next);
+        }
+    };
+};
 
-
-module.exports = authenticateToken;
+module.exports = excludeRoutes(['/login', '/register'], authenticateToken);
