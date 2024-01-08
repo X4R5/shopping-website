@@ -72,6 +72,14 @@ class User {
             callback(result);
         });
     }
+
+    // add information
+    static addInformation(connection, UserId, text, callback) {
+        connection.query("INSERT INTO information (UserId, text) VALUES (?,?)", [UserId, text], (err, result) => {
+            if (err) throw err;
+            callback(result);
+        });
+    }
 }
 
 module.exports = {User};

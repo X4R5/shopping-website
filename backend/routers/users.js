@@ -5,6 +5,7 @@ const authenticateToken = require("../helpers/jwt");
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const { text } = require('body-parser');
 require('dotenv').config();
 
 // GET endpoint to retrieve all users
@@ -86,6 +87,16 @@ router.post("/login", (req, res) => {
             console.log(result)
             res.status(404).json({message: "User not found"});
         }
+    });
+});
+
+// POST endpoint to add information text
+router.post("/information", authenticateToken, (req, res) => {
+    let { text } = req.body;
+    let UserId = req.user.id;
+
+    User.addInformation(connection, UserId, text, (result) => {
+        res.json(result);
     });
 });
 
