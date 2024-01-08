@@ -20,6 +20,11 @@ function ProductPage() {
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(0);
 
+  const [sortRatingDirection, setSortRatingDirection] = useState('desc');
+  const [sortLikesDirection, setSortLikesDirection] = useState('desc');
+  const [sortDislikesDirection, setSortDislikesDirection] = useState('desc');
+
+
   useEffect(() => {
     if(id) {
       const fetchProduct = async () => {
@@ -119,13 +124,32 @@ function ProductPage() {
   }
 
   const fetchSortedComments = async (sortOption) => {
+    let sortDirection;
+
+    switch(sortOption) {
+      case 'rating':
+        sortDirection = sortRatingDirection;
+        setSortRatingDirection(sortRatingDirection === 'desc' ? 'ascend' : 'desc');
+        break;
+      case 'like':
+        sortDirection = sortLikesDirection;
+        setSortLikesDirection(sortLikesDirection === 'desc' ? 'ascend' : 'desc');
+        break;
+      case 'dislike':
+        sortDirection = sortDislikesDirection;
+        setSortDislikesDirection(sortDislikesDirection === 'desc' ? 'ascend' : 'desc');
+        break;
+      default:
+        // Default direction or handling
+    }
+
     try {
       const response = await fetch(`http://localhost:3001/api/comments/${id}/sorted`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ sortOption: sortOption }),
+        body: JSON.stringify({ sort_option: sortOption + "_" + sortDirection  }),
       });
       if (!response.ok) throw new Error('Failed to fetch sorted comments.');
 
@@ -135,7 +159,7 @@ function ProductPage() {
       console.error('Error fetching sorted comments:', error);
       setError(error.message);
     }
-  }
+  };
 
 
   const postComment = async () => {
@@ -264,7 +288,7 @@ function ProductPage() {
 
         <Row className="justify-content-center my-3">
           <ButtonGroup>
-            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>Rating</Button>
+            <Button variant="outline-secondary" onClick={() => fetchSortedComments('date')}>Date</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('rating')}>Rating</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('likes')}>Likes</Button>
             <Button variant="outline-secondary" onClick={() => fetchSortedComments('dislikes')}>Dislikes</Button>
