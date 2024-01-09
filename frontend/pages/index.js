@@ -23,9 +23,9 @@ function HomePage() {
   return (
     <div>
       <Navbar />
-      {/* <DiscountedProductsSlider /> */}
+      <DiscountedProductsSlider />
       {categories.map(category => (
-        <ProductsOfCategory key={2} categoryId={2} categoryTitle={category.category_name}/>
+        <ProductsOfCategory key={category.category_id} categoryId={category.category_id} categoryTitle={category.category_name}/>
       ))}
     </div>
   );

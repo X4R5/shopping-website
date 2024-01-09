@@ -103,11 +103,21 @@ function ProductPage() {
   }, [id]);
 
   const handleAddToCart = () => {
+
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert("Ürünü sepete eklemek için giriş yapmalısınız!");
+      router.push('/login');
+      return;
+    }
+  
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     
     const productToAdd = {
       productId: id,
       quantity: quantity,
+      price: product.campaign ? product.product_price * product.discount / 100 : product.product_price,
     };
   
     const updatedCart = [...cart, productToAdd];
@@ -121,9 +131,9 @@ function ProductPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!product) return <div>Product not found!</div>;
+  // if (loading) return <div>Loading...</div>;
+  // if (error) return <div>Error: {error}</div>;
+  // if (!product) return <div>Product not found!</div>;
 
   const renderStars = () => {
     let stars = [];
@@ -256,8 +266,8 @@ function ProductPage() {
                   <Card.Title>{product.product_name}</Card.Title>
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
-                      {product.discountPrice ? (
-                        <h5>Fiyat: <span className="text-muted text-decoration-line-through"></span>{product.product_price}<span className="text-success">{product.discountPrice}</span></h5>
+                      {product.campaign ? (
+                        <h5>Fiyat: <span className="text-muted text-decoration-line-through"></span>{product.product_price}<span className="text-success">{product.product_price * product.discount / 100}</span></h5>
                       ) : (
                         <h5>Fiyat: {product.product_price}</h5>
                       )}

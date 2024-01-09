@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-function CartItem({ item, quantity, onIncrease, onDecrease, onRemove }) {
-  const itemTotalPrice = item.product_price * quantity;
+function CartItem({ item, quantity, price, onIncrease, onDecrease, onRemove }) {
+  const itemTotalPrice = price * quantity;
 
   useEffect(() => {
-    console.log('CartItem component is mounted!');
-    console.log(item);
+
   }, []);
 
   return (

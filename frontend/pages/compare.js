@@ -62,26 +62,28 @@ function ComparePage() {
 
   return (
     <>
-      <Navbar />
-      <div className="container">
-        <h1>Ürünlerin Karşılaştırılması:</h1>
-        <div className="row">
-          {products.map((product, index) => (
-            <div key={product.id} className="d-flex col justify-content-center align-items-center">
-                <h2>{index + 1}. {product.product_name}</h2>
-                <img src={product.product_image} alt={product.product_name} />
-                <p>Price: {product.product_price}</p>
-                <p>Rating: {ratings[index]}</p>
-                <p>Number of Reviews: {commentCounts[index]}</p>
-                <p>Description: {product.product_desc}</p>
-                <hr />
-
+        <Navbar />
+        <div className="container my-4">
+            <h1 className="text-center mb-4">Ürünlerin Karşılaştırılması:</h1>
+            <div className="row">
+                {products.map((product, index) => (
+                    <div key={product.id} className="col-md-6 d-flex justify-content-center">
+                        <div className="card mb-4" style={{ width: "18rem" }}>
+                            <img src={product.product_image} className="card-img-top" alt={product.product_name} />
+                            <div className="card-body">
+                                <h5 className="card-title">{product.product_name}</h5>
+                                <p className="card-text">Fiyat: {product.product_price} TL</p>
+                                <p className="card-text">Rating: {ratings[index]}</p>
+                                <p className="card-text">Yorum Sayısı: {commentCounts[index]}</p>
+                                <p className="card-text">Açıklama: {product.product_desc}</p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
-          ))}
         </div>
-      </div>
     </>
-  );
+);
 }
 
 export default ComparePage;

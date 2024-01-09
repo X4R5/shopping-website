@@ -9,7 +9,7 @@ function ContactPage() {
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     setToken(storedToken || '');
-  }, []); // This effect runs once, similar to componentDidMount
+  }, []);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -38,27 +38,38 @@ function ContactPage() {
   return (
     <div>
       <Navbar />
-      {token ? (
-        <div>
-          <h1>İletişim</h1>
-          <form onSubmit={handleFormSubmit}>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message here"
-              rows="5"
-              required
-            ></textarea>
-            <br />
-            <button type="submit" className='btn btn-orange'>Mesajı Gönder</button>
-          </form>
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6">
+            {token ? (
+              <div className="card">
+                <div className="card-header">
+                  <h1 className="card-title">İletişim</h1>
+                </div>
+                <div className="card-body">
+                  <form onSubmit={handleFormSubmit}>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Type your message here"
+                      rows="5"
+                      required
+                      className="form-control"
+                    ></textarea>
+                    <br />
+                    <button type="submit" className="btn btn-primary">Mesajı Gönder</button>
+                  </form>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p>İletişime geçmek için giriş yapınız.</p>
+                <Link href="/login"><a className="btn btn-primary">Giriş Yap</a></Link>
+              </div>
+            )}
+          </div>
         </div>
-      ) : (
-        <div>
-          <p>İletişime geçmek için giriş yapınız.</p>
-          <Link href="/login">Giriş Yap</Link>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
