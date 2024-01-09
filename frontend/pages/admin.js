@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import AdminOrderCard from '../components/AdminOrderCard';
+
 
 function AdminPage() {
   const [activeTab, setActiveTab] = useState('createProduct');
   // State for create product form
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState('');
-  const [productCategory, setProductCategory] = useState('');
+
+  const [productCategory, setProductCategory] = useState(1);
+
   const [productDescription, setProductDescription] = useState('');
   const [productImage, setProductImage] = useState('');
 
@@ -44,10 +48,48 @@ function AdminPage() {
   };
   
 
-  const handleCreateProductSubmit = (e) => {
-    e.preventDefault();
-    // Submit create product form logic here
+
+  const handleCreateProductSubmit = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+  
+    try {
+      const response = await fetch('http://localhost:3001/api/products', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          category_id: productCategory,
+          product_image: productImage,
+          product_name: productName,
+          product_price: productPrice,
+          product_stock: 10,
+          product_desc: productDescription,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Ürün oluşturulamadı.');
+      }
+  
+      alert('Ürün oluşturuldu.');
+  
+      // Clear the form fields after successful submission if needed
+      setProductName('');
+      setProductPrice('');
+      setProductCategory(1);
+      setProductDescription('');
+      setProductImage('');
+  
+      // Optionally, reload the data on the page without refreshing the entire page
+      fetchOrders();
+    } catch (error) {
+      console.error('Ürün oluşturulurken hata oluştu:', error);
+    }
   };
+  
+
 
   return (
     <div>
@@ -84,7 +126,14 @@ function AdminPage() {
                   <div className="mb-3">
                     <label htmlFor="productCategory">Kategorisi</label>
                     <select className="form-control" id="productCategory" value={productCategory} onChange={(e) => setProductCategory(e.target.value)}>
-                      {/* Populate options here */}
+
+                      <option value="1">Elektronik</option>
+                      <option value="2">Moda</option>
+                      <option value="3">Ofis</option>
+                      <option value="4">Kozmetik</option>
+                      <option value="5">Süpermarket</option>
+                      <option value="6">Kitap</option>
+
                     </select>
                   </div>
                   <div className="mb-3">
@@ -104,7 +153,9 @@ function AdminPage() {
             <div>
                 <h3>Siparişler</h3>
                 {orders.map((order) => (
-                    <OrderCard key={order.id} order={order} />
+
+                    <AdminOrderCard key={order.id} initialOrder={order} />
+
                 ))}
             </div>
             )}
@@ -112,7 +163,9 @@ function AdminPage() {
         </div>
       </div>
     </div>
+
   );
 }
+
 
 export default AdminPage;

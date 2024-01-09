@@ -22,7 +22,11 @@ function NavbarCategories() {
             <ul className="navbar-nav horizontal-list d-flex justify-content-center">
               {categories.map((category) => (
                 <li className="nav-item list-group-item" key={category.id}>
-                  <Link className="nav-link" href={`/category/${category.id}`} passHref>
+                  <Link
+                    className="nav-link"
+                    href={`/category/${category.id}`}
+                    passHref
+                    legacyBehavior>
                       {category.name}
                   </Link>
                 </li>

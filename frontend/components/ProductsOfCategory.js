@@ -25,8 +25,9 @@ function ProductsOfCategory({ categoryId, categoryTitle }) {
       <div className="my-2 d-flex justify-content-between align-items-center category-title">
         <h2 className='mx-2'>{categoryTitle}</h2>
         <div className='view-all-link mx-2'>
+
           <Link href={`/category/${categoryId}`}>
-            <a>Tümünü Gör</a>
+            Tümünü Gör
           </Link>
           <span className="arrow">{'>'}</span>
         </div>

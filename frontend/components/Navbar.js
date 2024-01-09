@@ -49,9 +49,13 @@ function Navbar() {
     <div className="mb-3">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
-          <Link href="/">
-            <a className="navbar-brand">hepsiburada</a>
+
+          <Link href="/" className="navbar-brand">
+            hepsiburada
           </Link>
+
+
+
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
             <span className="navbar-toggler-icon"></span>
           </button>

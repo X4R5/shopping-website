@@ -7,6 +7,9 @@ function CartItem({ item, quantity, price, onIncrease, onDecrease, onRemove }) {
 
   useEffect(() => {
 
+    console.log('CartItem component is mounted!');
+
+
   }, []);
 
   return (

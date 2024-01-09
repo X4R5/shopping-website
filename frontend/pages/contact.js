@@ -38,6 +38,21 @@ function ContactPage() {
   return (
     <div>
       <Navbar />
+
+      {token ? (
+        <div>
+          <h1>İletişim</h1>
+          <form onSubmit={handleFormSubmit}>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type your message here"
+              rows="5"
+              required
+            ></textarea>
+            <br />
+            <button type="submit" className='btn btn-orange'>Mesajı Gönder</button>
+          </form>
       <div className="container mt-5">
         <div className="row justify-content-center">
           <div className="col-md-6">
@@ -64,10 +79,11 @@ function ContactPage() {
             ) : (
               <div className="text-center">
                 <p>İletişime geçmek için giriş yapınız.</p>
-                <Link href="/login"><a className="btn btn-primary">Giriş Yap</a></Link>
+                <Link href="/login" className="btn btn-primary">Giriş Yap</Link>
               </div>
             )}
           </div>
+
         </div>
       </div>
     </div>
