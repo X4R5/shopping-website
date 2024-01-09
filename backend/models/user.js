@@ -47,7 +47,6 @@ class User {
         });
     }
 
-    // update user by id
     static updateUserById(connection, id, name, email, password, callback) {
         connection.query("UPDATE users SET name = ?, email = ?, password = ? WHERE UserId = ?", 
         [name, email, password, id], (err, result) => {
@@ -56,7 +55,6 @@ class User {
         });
     }
 
-    // login
     static login(connection, email, callback) {
         connection.query("SELECT * FROM users WHERE email = ?", 
         [email], (err, result) => {
@@ -73,7 +71,6 @@ class User {
         });
     }
 
-    // add information
     static addInformation(connection, UserId, text, callback) {
         connection.query("INSERT INTO information (UserId, text) VALUES (?,?)", [UserId, text], (err, result) => {
             if (err) throw err;
@@ -81,8 +78,6 @@ class User {
         });
     }
 
-
-    // get all information and join user name user email
     static getInformation(connection, callback) {
         connection.query(`SELECT information.id, information.UserId, information.text, users.name, 
         users.email FROM information INNER JOIN users ON information.UserId = users.UserId`, 

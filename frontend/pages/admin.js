@@ -17,6 +17,7 @@ function AdminPage() {
   const [productImage, setProductImage] = useState('');
 
   const [orders, setOrders] = useState([]);
+  const [messages, setMessages] = useState([]);
 
   const router = useRouter();
 

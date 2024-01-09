@@ -59,7 +59,7 @@ router.delete("/:id", (req, res) => {
     });
 });
 
-// GET endpoint to get userCount
+
 router.post("/login", (req, res) => {
     let { email, password } = req.body;
     User.login(connection, email, (result) => {
@@ -67,9 +67,7 @@ router.post("/login", (req, res) => {
             const user = result[0];
             const isPasswordCorrect = bcrypt.compareSync(password, user.password);
             if (isPasswordCorrect) {
-                // User is logged in
 
-                // Create token
                 const token = jwt.sign({id: user.UserId, isAdmin: user.isAdmin}, process.env.JWT_SECRET, {expiresIn: 86400});   
                 if(user.isAdmin === "TRUE"){
                     res.status(200).send({

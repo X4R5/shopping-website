@@ -1,5 +1,3 @@
-const { query } = require("express");
-
 class Comment{
     // comment_id product_id user_id comment rating
     constructor(comment_id, product_id, user_id, comment, rating){
@@ -47,11 +45,8 @@ class Comment{
         });
     }
 
-    // add comment
     static addComment(connection, product_id, user_id, comment, rating, callback) {
-        // Check if the user has an existing comment for the product
 
-        //get max comment_id
         connection.query("SELECT MAX(comment_id) AS maxCommentId FROM comments", (err, result) => {
             if(err) throw err;
             const maxCommentId = result[0].maxCommentId;
@@ -65,7 +60,6 @@ class Comment{
                 if (err) throw err;
     
                 if (existingCommentResult.length > 0) {
-                    // User has an existing comment, delete it
                     const existingCommentId = existingCommentResult[0].comment_id;
                     connection.query(
                         "DELETE FROM comments WHERE comment_id = ?",
@@ -73,7 +67,6 @@ class Comment{
                         (deleteErr, deleteResult) => {
                             if (deleteErr) throw deleteErr;
     
-                            // Now, add the new comment
                             connection.query(
                                 "INSERT INTO comments (comment_id, product_id, user_id, comment, rating) VALUES (?,?,?,?,?)",
                                 [newCommentId, product_id, user_id, comment, rating],
@@ -86,7 +79,6 @@ class Comment{
                         }
                     );
                 } else {
-                    // User does not have an existing comment, simply add the new comment
                     connection.query(
                         "INSERT INTO comments (comment_id, product_id, user_id, comment, rating) VALUES (?,?,?,?,?)",
                         [newCommentId, product_id, user_id, comment, rating],
@@ -120,7 +112,6 @@ class Comment{
         });
     }
 
-    // get average rating by product_id
     static getAverageRatingByProductId(connection, product_id, callback){
         connection.query("SELECT AVG(rating) AS averageRating FROM comments WHERE product_id = ?", 
             [product_id], (err, result) => {
@@ -129,13 +120,10 @@ class Comment{
         });
     }
 
-  // Like comment by id and user_id
 static likeComment(connection, user_id, comment_id, callback) {
     connection.query("SELECT * FROM likes WHERE userId = ? AND commentId = ?", 
         [user_id, comment_id], (err, likeRows) => {
         if (err) throw err;
-
-        // Delete existing like if it exists
         if (likeRows.length > 0) {
             connection.query("DELETE FROM likes WHERE userId = ? AND commentId = ?", 
                 [user_id, comment_id], (err, result) => {
@@ -143,12 +131,9 @@ static likeComment(connection, user_id, comment_id, callback) {
                 callback(result);
             });
         } else {
-            // Check if user disliked the comment, delete the dislike
             connection.query("DELETE FROM dislikes WHERE userId = ? AND commentId = ?", 
                 [user_id, comment_id], (err, result) => {
                 if (err) throw err;
-
-                // Add like after deleting the dislike
                 connection.query("INSERT INTO likes (userId, commentId) VALUES (?,?)", 
                     [user_id, comment_id], (err, result) => {
                     if (err) throw err;
@@ -159,13 +144,10 @@ static likeComment(connection, user_id, comment_id, callback) {
     });
 }
 
-// Dislike comment by id and user_id
 static dislikeComment(connection, user_id, comment_id, callback) {
     connection.query("SELECT * FROM dislikes WHERE userId = ? AND commentId = ?", 
         [user_id, comment_id], (err, dislikeRows) => {
         if (err) throw err;
-
-        // Delete existing dislike if it exists
         if (dislikeRows.length > 0) {
             connection.query("DELETE FROM dislikes WHERE userId = ? AND commentId = ?", 
                 [user_id, comment_id], (err, result) => {
@@ -173,12 +155,9 @@ static dislikeComment(connection, user_id, comment_id, callback) {
                 callback(result);
             });
         } else {
-            // Check if user liked the comment, delete the like
             connection.query("DELETE FROM likes WHERE userId = ? AND commentId = ?", 
                 [user_id, comment_id], (err, result) => {
                 if (err) throw err;
-
-                // Add dislike after deleting the like
                 connection.query("INSERT INTO dislikes (userId, commentId) VALUES (?,?)", 
                     [user_id, comment_id], (err, result) => {
                     if (err) throw err;
@@ -204,7 +183,6 @@ static getLikesDislikesByCommentId(connection, comment_id, callback){
 
 }
 
-// filter comments
 static filterById(connection, product_id, sort_option, callback) {
     let orderByClause;
 
@@ -253,7 +231,7 @@ static filterById(connection, product_id, sort_option, callback) {
     });
 }
 
-// get total comments by product_id
+
 static getTotalCommentsByProductId(connection, product_id, callback) {
     connection.query("SELECT COUNT(*) AS total_comments FROM comments WHERE product_id = ?", 
         [product_id], (err, result) => {
@@ -262,7 +240,7 @@ static getTotalCommentsByProductId(connection, product_id, callback) {
     });
 }
     
-// add a new adminReply to a comment by comment_id
+
 static addAdminReply(connection, comment_id, adminReply, callback) {
     connection.query("UPDATE comments SET adminReply = ? WHERE comment_id = ?", 
         [adminReply, comment_id], (err, result) => {
@@ -271,7 +249,6 @@ static addAdminReply(connection, comment_id, adminReply, callback) {
     });
 }
 
-// getAdminReplyByCommentId
 static getAdminReplyByCommentId(connection, comment_id, callback) {
     connection.query("SELECT adminReply FROM comments WHERE comment_id = ?", 
         [comment_id], (err, result) => {

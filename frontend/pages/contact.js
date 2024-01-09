@@ -62,7 +62,7 @@ function ContactPage() {
             <div className="col-md-6 text-center">
               <p>İletişime geçmek için giriş yapınız.</p>
               <Link href="/login">
-                <a className="btn btn-primary">Giriş Yap</a>
+                Giriş Yap
               </Link>
             </div>
           </div>

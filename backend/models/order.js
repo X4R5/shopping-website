@@ -23,9 +23,8 @@ class Order{
         });
     }
 
-    // add order to orders and order_items
+
     static addOrder(connection, ProductList, userId, address, deliveryOption, paymentMethod, callback){
-        // get max id
         connection.query("SELECT MAX(id) AS maxOrderId FROM orders", (err, result) => {
             if(err) throw err;
             const maxOrderId = result[0].maxOrderId;
@@ -38,7 +37,6 @@ class Order{
                 callback(result);
             });
 
-            // add order items
             ProductList.forEach(product => {
                 connection.query(`INSERT INTO orderdetails (orderId, productId, quantity) 
                     VALUES (?,?,?)`, [newOrderId, product.product_id, product.quantity], (err, result) => {
@@ -48,8 +46,7 @@ class Order{
         });
     }
         
-    // get orders by userid and orderdetails by orderid
-    static getOrderDetailsByOrderId(connection, userId, callback) {
+    static getOrderDetails(connection, userId, callback) {
         const query = `
             SELECT orders.id, orders.userId, orders.paymentMethod, orders.deliveryOption, orders.address, orders.date, orders.id,
                    orders.status,
@@ -68,7 +65,6 @@ class Order{
         });
     }
     
-    // check for coupon code and return discount
     static checkCoupon(connection, couponCode, callback){
         connection.query("SELECT * FROM coupons WHERE couponCode = ?", [couponCode], (err, result) => {
             if(err) throw err;

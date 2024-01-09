@@ -32,7 +32,7 @@ router.post("/", authenticateToken, (req, res) => {
 // GET endpoint to retrieve orders by userId
 router.get("/c/user", authenticateToken, (req, res) => {
     const userId = req.user.id;
-    Order.getOrderDetailsByOrderId(connection, userId, (result) => {
+    Order.getOrderDetails(connection, userId, (result) => {
         res.json(result);
     });
 });
