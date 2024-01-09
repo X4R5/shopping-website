@@ -7,7 +7,7 @@ import AdminOrderCard from '../components/AdminOrderCard';
 
 function AdminPage() {
   const [activeTab, setActiveTab] = useState('createProduct');
-  // State for create product form
+
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState('');
 
@@ -16,7 +16,6 @@ function AdminPage() {
   const [productDescription, setProductDescription] = useState('');
   const [productImage, setProductImage] = useState('');
 
-  // State for orders
   const [orders, setOrders] = useState([]);
 
   const router = useRouter();
@@ -24,10 +23,10 @@ function AdminPage() {
   useEffect(() => {
     const isAdmin = localStorage.getItem('isAdmin') === 'true';
     if (!isAdmin) {
-      router.push('/');
+        router.push('/');
     } else {
-      // Fetch orders when admin logs in
-      fetchOrders();
+        fetchOrders();
+        fetchMessages();
     }
   }, [router]);
 
@@ -46,6 +45,23 @@ function AdminPage() {
       console.error('Siparişler çekilirken hata oluştu:', error);
     }
   };
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/users/information/get', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error('Mesajlar çekilemedi.');
+      const fetchedMessages = await response.json();
+      setMessages(fetchedMessages);
+    } catch (error) {
+      console.error('Mesajlar çekilirken hata oluştu:', error);
+    }
+  };
+
   
 
 
@@ -75,14 +91,12 @@ function AdminPage() {
   
       alert('Ürün oluşturuldu.');
   
-      // Clear the form fields after successful submission if needed
       setProductName('');
       setProductPrice('');
       setProductCategory(1);
       setProductDescription('');
       setProductImage('');
   
-      // Optionally, reload the data on the page without refreshing the entire page
       fetchOrders();
     } catch (error) {
       console.error('Ürün oluşturulurken hata oluştu:', error);
@@ -108,6 +122,12 @@ function AdminPage() {
                   Siparişleri Görüntüle
                 </a>
               </li>
+              <li className="nav-item">
+                <a className={`nav-link ${activeTab === 'viewMessages' && 'active'}`} onClick={() => setActiveTab('viewMessages')}>
+                  İletişim Mesajları
+                </a>
+              </li>
+
             </ul>
           </div>
           <div className="col-md-9">
@@ -159,6 +179,24 @@ function AdminPage() {
                 ))}
             </div>
             )}
+
+            {activeTab === 'viewMessages' && (
+              <div>
+                <h3>İletişim Mesajları</h3>
+                {messages.map((message) => (
+                  <div key={message.id} className="card mb-3">
+                    <div className="card-header">
+                      {message.name}
+                    </div>
+                    <div className="card-body">
+                      <h5 className="card-title">{message.email}</h5>
+                      <p className="card-text">{message.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
           </div>
         </div>
       </div>
