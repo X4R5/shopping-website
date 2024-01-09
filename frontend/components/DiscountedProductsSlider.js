@@ -7,10 +7,11 @@ function DiscountedProductsSlider() {
   useEffect(() => {
     const fetchDiscountedProducts = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/products/discounted');
+        const response = await fetch('http://localhost:3001/api/products/d/discounted');
         if (!response.ok) throw new Error('Indirimli ürünler çekilemedi.');
         const products = await response.json();
-        setDiscountedProducts(products[0]);
+        setDiscountedProducts(products);
+        console.log("a", products);
       } catch (error) {
         console.error('Indirimli ürünler çekilirken hata oluştu:', error);
       }

@@ -114,6 +114,14 @@ class Product {
             callback(result);
         });
     }
+
+    // get discounted products
+    static getDiscountedProducts(connection, callback) {
+        connection.query("SELECT * FROM products WHERE discount > 0 && campaign = 1", (err, result) => {
+            if (err) throw err;
+            callback(result);
+        });
+    }
 }
 
 module.exports = Product;

@@ -93,5 +93,10 @@ router.get('/category/:id', (req, res) => {
     });
 });
 
+router.get('/d/discounted', (req, res) => {
+    Product.getDiscountedProducts(connection, (result) => {
+        res.json(result);
+    });
+    });
 
 module.exports = router;
