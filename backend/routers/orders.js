@@ -38,4 +38,23 @@ router.post("/coupon", (req, res) => {
     });
 }); 
 
+// POST endpoint to update order status
+router.post("/updateStatus/:id", authenticateToken, (req, res) => {
+    const isAdmin = req.user.isAdmin;
+    console.log(isAdmin);
+    const status = "Siparis Teslim Edildi";
+    const orderId = req.params.id;
+    if(isAdmin == "TRUE"){
+        Order.updateOrderStatus(connection, orderId, status, (result) => {
+            res.json(result);
+        });
+    }
+    else{ //return status and message
+        res.status(401).json({
+            status: "error",
+            message: "Unauthorized"
+        });
+    }
+});
+
 module.exports = router;

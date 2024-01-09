@@ -32,7 +32,7 @@ class Order{
             const newOrderId = maxOrderId + 1;
             const date = new Date();
             const OrderDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-            connection.query(`INSERT INTO orders (id, UserId, date, address, deliveryOption, paymentMethod) 
+            connection.query(`INSERT INTO orders (id, userId, date, address, deliveryOption, paymentMethod) 
                 VALUES (?,?,?,?,?,?)`, [newOrderId, userId, OrderDate, address, deliveryOption, paymentMethod], (err, result) => {
                 if(err) throw err;
                 callback(result);
@@ -75,6 +75,16 @@ class Order{
             callback(result);
         });
     }
+
+    // update order status if isAdmin
+    static updateOrderStatus(connection, orderId, status, callback){
+        connection.query("UPDATE orders SET status = ? WHERE id = ?", [status, orderId], (err, result) => {
+            if(err) throw err;
+            callback(result);
+        });
+    }
+    
+
 
 }
 
