@@ -16,6 +16,43 @@ function CartPage() {
   const grandTotal = total + shipping;
 
   useEffect(() => {
+<<<<<<< Updated upstream
+=======
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Lütfen giriş yapınız.');
+      router.push('/login');
+      return;
+    }
+    
+  
+    const fetchBasketItems = async () => {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      console.log('Sepet bilgisi:', cart);
+    
+      try {
+        const updatedBasketItems = [];
+        
+        for (const cartItem of cart) {
+          const product = await fetchProductDetails(parseInt(cartItem.productId));
+          console.log("f", cartItem);
+          
+          updatedBasketItems.push({
+            ...product[0],
+            quantity: cartItem.quantity,
+            price: cartItem.price,
+          });
+        }
+    
+        setBasketItems(updatedBasketItems);
+        console.log("a", basketItems);
+        
+      } catch (error) {
+        console.error('Sepet bilgisi çekilirken hata oluştu:', error);
+      }
+    };
+
+>>>>>>> Stashed changes
     const fetchProductDetails = async (id) => {
       const token = localStorage.getItem('token');
       try {
@@ -27,12 +64,14 @@ function CartPage() {
         });
         if (!response.ok) throw new Error('Ürün bilgisi çekilemedi.');
         const product = await response.json();
-        console.log(product);
+        console.log("c", product);
+        console.log("d", id);
         return product;
       } catch (error) {
         console.error('Ürün çekilirken hata oluştu:', error);
       }
     };
+<<<<<<< Updated upstream
   
     const fetchBasketItems = async () => {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -53,15 +92,27 @@ function CartPage() {
         console.error('Sepet bilgisi çekilirken hata oluştu:', error);
       }
     };
+=======
+    
+    
+>>>>>>> Stashed changes
   
     fetchBasketItems();
+    console.log("e", basketItems.length);
   }, []);
 
   useEffect(() => {
+<<<<<<< Updated upstream
     console.log(basketItems);
   });
   
 
+=======
+    if (basketItems) {
+      console.log("b", basketItems);
+    }
+  }, [basketItems]);
+>>>>>>> Stashed changes
 
 
   const handleIncrease = (id) => {
@@ -131,6 +182,10 @@ function CartPage() {
     }
   };
   
+  const handleRedirectCompleteOrder = () => {
+    router.push('/completeorder');
+  }
+
 
   const finalTotal = isDiscountApplied ? grandTotal - discountAmount : grandTotal;
 
@@ -198,9 +253,15 @@ function CartPage() {
               <input type="text" value={coupon} onChange={handleCouponChange} placeholder="Kupon Kodu" className="form-control" />
               <button className="btn btn-success mt-2" onClick={applyCoupon}>Kupon Uygula</button>
             </div>
+<<<<<<< Updated upstream
           <Link href="/completeorder">
             <button className="btn btn-orange">Satın Al</button>
           </Link>
+=======
+          
+            <button onClick={handleRedirectCompleteOrder} className="btn btn-orange">Satın Al</button>
+          
+>>>>>>> Stashed changes
 
           </div>
         </div>

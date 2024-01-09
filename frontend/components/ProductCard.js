@@ -11,9 +11,14 @@ function ProductCard({ product }) {
       />
       <div className="card-body d-flex flex-row justify-content-around mt-4">
         <div className="d-flex flex-column">
+<<<<<<< Updated upstream
           <Link href={`/product/${product.id}`} passHref>
               {product.product_name}
 
+=======
+          <Link href={`/product/${product.product_id}`} passHref legacyBehavior>
+            {product.product_name}
+>>>>>>> Stashed changes
           </Link>
           {product.product_price && <p className="product-price text-decoration-line-through align-self-bottom">
             {product.product_price} TL

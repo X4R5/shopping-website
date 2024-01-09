@@ -6,7 +6,10 @@ function CartItem({ item, quantity, onIncrease, onDecrease, onRemove }) {
   const itemTotalPrice = item.product_price * quantity;
 
   useEffect(() => {
+<<<<<<< Updated upstream
     console.log('CartItem component is mounted!');
+=======
+>>>>>>> Stashed changes
     console.log(item);
   }, []);
 

@@ -30,7 +30,13 @@ function Navbar() {
     <div className="mb-3">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
+<<<<<<< Updated upstream
           <a className="navbar-brand logo-text" href="#">hepsiburada</a>
+=======
+          <Link href="/" className="navbar-brand">
+            hepsiburada
+          </Link>
+>>>>>>> Stashed changes
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
             <span className="navbar-toggler-icon"></span>
           </button>

@@ -16,6 +16,14 @@ router.get("/", (req, res) => {
 });
 
 // GET endpoint to retrieve user by id
+router.get("/:id", (req, res) => {
+    const id = req.params.id;
+    User.getUserById(connection, id, (result) => {
+        res.json(result);
+    });
+});
+
+// GET endpoint to retrieve user by id
 router.get("/user", authenticateToken, (req, res) => {
     const id = req.user.id;
     User.getUserById(connection, id, (result) => {
