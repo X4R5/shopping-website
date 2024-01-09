@@ -113,9 +113,14 @@ function ProductPage() {
     }
   
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (cart.find(item => item.product_id === id)) {
+      alert("Ürün zaten sepetinizde, adet değiştirmek için sepet sayfasına gidiniz.");
+      return;
+    }
     
     const productToAdd = {
-      productId: id,
+      product_id: id,
       quantity: quantity,
       price: product.campaign ? product.product_price * product.discount / 100 : product.product_price,
     };
@@ -124,6 +129,9 @@ function ProductPage() {
   
     try {
       localStorage.setItem('cart', JSON.stringify(updatedCart));
+      if (!localStorage.getItem('product' + product.product_id)) {
+        localStorage.setItem('product' + product.product_id, JSON.stringify(product));
+      }
       alert("Ürün başarıyla sepete eklendi!");
     } catch (error) {
       console.error('Sepete ekleme sırasında bir hata oluştu:', error);
@@ -131,9 +139,9 @@ function ProductPage() {
     }
   };
 
-  // if (loading) return <div>Loading...</div>;
-  // if (error) return <div>Error: {error}</div>;
-  // if (!product) return <div>Product not found!</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!product) return <div>Product not found!</div>;
 
   const renderStars = () => {
     let stars = [];
