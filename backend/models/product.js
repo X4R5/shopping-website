@@ -41,15 +41,17 @@ class Product {
     static addProduct(connection, category_id, product_image, product_name, product_price, product_stock, 
         product_desc, callback) {
         //get max product_id
-        connection.query("SELECT MAX(product_id) AS maxProductId FROM products", (err, result) => {
+        connection.query("SELECT MAX(product_id) AS max_product_id FROM products", (err, result) => {
             if (err) throw err;
-            const maxProductId = result[0].maxProductId;
-            const newProductId = maxProductId + 1;
-            
-            connection.query(`INSERT INTO products (product_id, category_id, product_image, product_name, 
-                product_price, product_stock, product_desc) VALUES (?,?,?,?,?,?,?)`, 
-                [newProductId, category_id, product_image, product_name, product_price, product_stock, 
-                    product_desc], (err, result) => {
+            let max_product_id = result[0].max_product_id;
+            if (max_product_id == null) {
+                max_product_id = 0;
+            }
+            let product_id = max_product_id + 1;
+            connection.query("INSERT INTO products (product_id, category_id, product_image, product_name, " +
+                "product_price, product_stock, product_desc) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+                [product_id, category_id, product_image, product_name, product_price, product_stock, 
+                product_desc], (err, result) => {
                 if (err) throw err;
                 callback(result);
             });
