@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
+import Link from 'next/link';
 
 function ProductsOfCategory({ categoryId, categoryTitle }) {
   const [products, setProducts] = useState([]);
@@ -24,13 +25,10 @@ function ProductsOfCategory({ categoryId, categoryTitle }) {
       <div className="my-2 d-flex justify-content-between align-items-center category-title">
         <h2 className='mx-2'>{categoryTitle}</h2>
         <div className='view-all-link mx-2'>
-<<<<<<< Updated upstream
-          <a href="#">Tümünü Gör</a>
-=======
+
           <Link href={`/category/${categoryId}`}>
             Tümünü Gör
           </Link>
->>>>>>> Stashed changes
           <span className="arrow">{'>'}</span>
         </div>
       </div>

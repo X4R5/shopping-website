@@ -3,27 +3,29 @@ import Navbar from '../components/Navbar';
 import CartItem from '../components/CartItem';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+
 
 function CartPage() {
+  const router = useRouter();
   const [basketItems, setBasketItems] = useState([]);
   const [coupon, setCoupon] = useState('');
   const [isDiscountApplied, setIsDiscountApplied] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
 
 
-  const total = basketItems.reduce((acc, item) => acc + item[0].product_price * item.quantity, 0);
+  const total = basketItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = 29.90;
   const grandTotal = total + shipping;
 
   useEffect(() => {
-<<<<<<< Updated upstream
-=======
     const token = localStorage.getItem('token');
     if (!token) {
       alert('Lütfen giriş yapınız.');
       router.push('/login');
       return;
     }
+
     
   
     const fetchBasketItems = async () => {
@@ -52,7 +54,7 @@ function CartPage() {
       }
     };
 
->>>>>>> Stashed changes
+
     const fetchProductDetails = async (id) => {
       const token = localStorage.getItem('token');
       try {
@@ -71,7 +73,7 @@ function CartPage() {
         console.error('Ürün çekilirken hata oluştu:', error);
       }
     };
-<<<<<<< Updated upstream
+
   
     const fetchBasketItems = async () => {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -84,6 +86,7 @@ function CartPage() {
         const updatedBasketItems = products.map((item, index) => ({
           ...item,
           quantity: cart[index].quantity,
+          price: cart[index].price,
         }));
 
         setBasketItems(updatedBasketItems);
@@ -92,27 +95,11 @@ function CartPage() {
         console.error('Sepet bilgisi çekilirken hata oluştu:', error);
       }
     };
-=======
-    
-    
->>>>>>> Stashed changes
+
   
     fetchBasketItems();
     console.log("e", basketItems.length);
   }, []);
-
-  useEffect(() => {
-<<<<<<< Updated upstream
-    console.log(basketItems);
-  });
-  
-
-=======
-    if (basketItems) {
-      console.log("b", basketItems);
-    }
-  }, [basketItems]);
->>>>>>> Stashed changes
 
 
   const handleIncrease = (id) => {
@@ -174,6 +161,14 @@ function CartPage() {
       const data = await response.json();
       setIsDiscountApplied(true);
       setDiscountAmount(data[0].discount);
+
+      const newBasketItems = basketItems.map(item => {
+        return { ...item, price: item.price - (item.price * discountAmount / 100) };
+      });
+
+      setBasketItems(newBasketItems);
+      localStorage.setItem('cart', JSON.stringify(newBasketItems));
+
       alert("Kupon başarıyla uygulandı!");
   
     } catch (error) {
@@ -187,7 +182,7 @@ function CartPage() {
   }
 
 
-  const finalTotal = isDiscountApplied ? grandTotal - discountAmount : grandTotal;
+  const finalTotal = isDiscountApplied ? grandTotal - (grandTotal * discountAmount / 100) : grandTotal;
 
 
   return (
@@ -206,6 +201,7 @@ function CartPage() {
                 <CartItem 
                   item={item[0]} 
                   quantity={item.quantity}
+                  price={item.price}
                   onIncrease={handleIncrease} 
                   onDecrease={handleDecrease} 
                   onRemove={handleRemove}
@@ -229,7 +225,7 @@ function CartPage() {
                         <>
                           <div className="d-flex justify-content-end">
                             <div className="mx-5">Uygulanan İndirim:</div>
-                            <div>{discountAmount.toFixed(2)} TL</div>
+                            <div>{grandTotal * discountAmount.toFixed(2) / 100} TL</div>
                           </div>
                           <div className="d-flex justify-content-end">
                             <div className="mx-5">Toplam:</div>
@@ -253,15 +249,9 @@ function CartPage() {
               <input type="text" value={coupon} onChange={handleCouponChange} placeholder="Kupon Kodu" className="form-control" />
               <button className="btn btn-success mt-2" onClick={applyCoupon}>Kupon Uygula</button>
             </div>
-<<<<<<< Updated upstream
-          <Link href="/completeorder">
-            <button className="btn btn-orange">Satın Al</button>
-          </Link>
-=======
+
           
             <button onClick={handleRedirectCompleteOrder} className="btn btn-orange">Satın Al</button>
-          
->>>>>>> Stashed changes
 
           </div>
         </div>

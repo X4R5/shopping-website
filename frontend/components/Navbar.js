@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import ColorfulLine from './ColorfulLine';
 import NavbarCategories from './NavbarCategories';
+import Link from 'next/link';
+
 
 function Navbar() {
   const [isLoggedIn, setIsLoggedIn] =   useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const admin = localStorage.getItem('isAdmin');
+    setIsAdmin(!!admin);
     setIsLoggedIn(!!token);
   }, []);
 
@@ -23,6 +28,20 @@ function Navbar() {
     window.location.href = '/cart';
   }
 
+  const handleAdminPanelRedirect = () => {
+    window.location.href = '/admin';
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('isAdmin');
+    window.location.href = '/';
+  }
+
+  const handleContactRedirect = () => {
+    window.location.href = '/contact';
+  }
+
 
   
 
@@ -30,34 +49,33 @@ function Navbar() {
     <div className="mb-3">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
-<<<<<<< Updated upstream
-          <a className="navbar-brand logo-text" href="#">hepsiburada</a>
-=======
+
           <Link href="/" className="navbar-brand">
             hepsiburada
           </Link>
->>>>>>> Stashed changes
+
+
+
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="mynavbar">
-            <ul className="navbar-nav me-auto">
-              <li className="nav-item">
-                <div className="input-group mt-2">
-                  <input type="text" className="form-control" placeholder="Ürünlerde ara" />
-                  <button className="btn btn-secondary" type="submit">Ara</button>
-                </div>
-              </li>
-            </ul>
             <div className="ml-auto">
             {isLoggedIn ? (
               <>
-                  
-                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleCartRedirect}>Sepet</button>
-                 
+              
+              {isAdmin && (
+                <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleAdminPanelRedirect}>Admin Panel</button>
+              )}
 
-                 
-                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleProfileRedirect}>Profilim</button>
+
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleContactRedirect}>İletişim</button>
+
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleCartRedirect}>Sepet</button>
+
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleProfileRedirect}>Profilim</button>
+
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleLogout}>Çıkış Yap</button>
                   
               </>
               ) : (

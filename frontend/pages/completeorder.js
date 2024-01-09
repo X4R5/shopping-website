@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useRouter } from 'next/router';
 
 function OrderCompletionPage() {
+  const router = useRouter();
   const [basketItems, setBasketItems] = useState([]);
 
   const [address, setAddress] = useState('');
@@ -11,7 +13,15 @@ function OrderCompletionPage() {
   const [deliveryOption, setDeliveryOption] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
+  const shipping = 29.90;
+
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Lütfen giriş yapınız.');
+      router.push('/login');
+      return;
+    }
     const fetchProductDetails = async (id) => {
       const token = localStorage.getItem('token');
       try {
@@ -41,6 +51,7 @@ function OrderCompletionPage() {
         const updatedBasketItems = products.map((item, index) => ({
           ...item,
           quantity: cart[index].quantity,
+          price: cart[index].price,
         }));
 
         setBasketItems(updatedBasketItems);
@@ -74,7 +85,7 @@ function OrderCompletionPage() {
       });
   
       if (!response.ok) throw new Error('Sipariş oluşturulamadı.');
-      // delete cart from local storage
+
       localStorage.removeItem('cart');
 
       const result = await response.json();
@@ -88,7 +99,8 @@ function OrderCompletionPage() {
   
 
   const additionalProducts = basketItems.length > 2 ? basketItems.length - 2 : 0;
-  const totalPrice = basketItems.reduce((total, item) => total + item[0].product_price * item.quantity, 0);
+  const totalPrice = basketItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const grandTotal = totalPrice + shipping;
 
   return (
     <div>
@@ -119,7 +131,7 @@ function OrderCompletionPage() {
             +{additionalProducts}
           </div>
         )}
-        <span className="mx-5 me-3">Toplam: {totalPrice.toFixed(2)} TL</span>
+        <span className="mx-5 me-3">Toplam: {grandTotal.toFixed(2)} TL</span>
       </div>
 
       <form onSubmit={(e) => {

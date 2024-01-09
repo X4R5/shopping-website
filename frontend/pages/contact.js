@@ -9,7 +9,7 @@ function ContactPage() {
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     setToken(storedToken || '');
-  }, []); // This effect runs once, similar to componentDidMount
+  }, []);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +38,7 @@ function ContactPage() {
   return (
     <div>
       <Navbar />
-<<<<<<< Updated upstream
+
       {token ? (
         <div>
           <h1>İletişim</h1>
@@ -53,7 +53,6 @@ function ContactPage() {
             <br />
             <button type="submit" className='btn btn-orange'>Mesajı Gönder</button>
           </form>
-=======
       <div className="container mt-5">
         <div className="row justify-content-center">
           <div className="col-md-6">
@@ -84,14 +83,9 @@ function ContactPage() {
               </div>
             )}
           </div>
->>>>>>> Stashed changes
+
         </div>
-      ) : (
-        <div>
-          <p>İletişime geçmek için giriş yapınız.</p>
-          <Link href="/login">Giriş Yap</Link>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

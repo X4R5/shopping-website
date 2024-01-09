@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import CarouselItem from './CarouselItem';
 
 function DiscountedProductsSlider() {
-
   const [discountedProducts, setDiscountedProducts] = useState([]);
 
   useEffect(() => {
     const fetchDiscountedProducts = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/discountedProducts');
+        const response = await fetch('http://localhost:3001/api/products/discounted');
         if (!response.ok) throw new Error('Indirimli ürünler çekilemedi.');
         const products = await response.json();
-        setDiscountedProducts(products);
+        setDiscountedProducts(products[0]);
       } catch (error) {
         console.error('Indirimli ürünler çekilirken hata oluştu:', error);
       }
@@ -20,6 +19,9 @@ function DiscountedProductsSlider() {
     fetchDiscountedProducts();
   }, []);
 
+  if (!discountedProducts || discountedProducts.length === 0) {
+    return null;
+  }
 
   const groupedProducts = [];
   for (let i = 0; i < discountedProducts.length; i += 3) {
@@ -31,7 +33,7 @@ function DiscountedProductsSlider() {
       <h3 className="discounted-products-heading">Kampanyalı Ürünler</h3>
 
       <div id="firsatUrunleri" className="discounted-products-carousel carousel carousel-dark slide" data-bs-ride="carousel">
-      <div className="carousel-inner">
+        <div className="carousel-inner">
           {groupedProducts.map((group, index) => (
             <CarouselItem key={index} active={index === 0} products={group} />
           ))}

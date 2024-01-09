@@ -4,12 +4,15 @@ import Navbar from '../components/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AdminOrderCard from '../components/AdminOrderCard';
 
+
 function AdminPage() {
   const [activeTab, setActiveTab] = useState('createProduct');
   // State for create product form
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState('');
+
   const [productCategory, setProductCategory] = useState(1);
+
   const [productDescription, setProductDescription] = useState('');
   const [productImage, setProductImage] = useState('');
 
@@ -38,13 +41,13 @@ function AdminPage() {
       });
       if (!response.ok) throw new Error('Siparişler çekilemedi.');
       const fetchedOrders = await response.json();
-      console.log(fetchedOrders[0]);
       setOrders(fetchedOrders);
     } catch (error) {
       console.error('Siparişler çekilirken hata oluştu:', error);
     }
   };
   
+
 
   const handleCreateProductSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
@@ -86,6 +89,8 @@ function AdminPage() {
     }
   };
   
+
+
   return (
     <div>
       <Navbar />
@@ -121,12 +126,14 @@ function AdminPage() {
                   <div className="mb-3">
                     <label htmlFor="productCategory">Kategorisi</label>
                     <select className="form-control" id="productCategory" value={productCategory} onChange={(e) => setProductCategory(e.target.value)}>
+
                       <option value="1">Elektronik</option>
                       <option value="2">Moda</option>
                       <option value="3">Ofis</option>
                       <option value="4">Kozmetik</option>
                       <option value="5">Süpermarket</option>
                       <option value="6">Kitap</option>
+
                     </select>
                   </div>
                   <div className="mb-3">
@@ -146,7 +153,9 @@ function AdminPage() {
             <div>
                 <h3>Siparişler</h3>
                 {orders.map((order) => (
+
                     <AdminOrderCard key={order.id} initialOrder={order} />
+
                 ))}
             </div>
             )}
@@ -157,7 +166,6 @@ function AdminPage() {
 
   );
 }
-
 
 
 export default AdminPage;
