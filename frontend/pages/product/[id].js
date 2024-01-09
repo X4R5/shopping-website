@@ -122,7 +122,7 @@ function ProductPage() {
     const productToAdd = {
       product_id: id,
       quantity: quantity,
-      price: product.campaign ? product.product_price * product.discount / 100 : product.product_price,
+      price: product.campaign ? product.product_price - (product.product_price * product.discount / 100) : product.product_price,
     };
   
     const updatedCart = [...cart, productToAdd];
@@ -275,9 +275,9 @@ function ProductPage() {
                   <ListGroup className="list-group-flush my-3">
                     <ListGroup.Item>
                       {product.campaign ? (
-                        <h5>Fiyat: <span className="text-muted text-decoration-line-through"></span>{product.product_price}<span className="text-success">{product.product_price * product.discount / 100}</span></h5>
+                        <h5>Fiyat: <span className="text-muted text-decoration-line-through">{product.product_price}</span><span className="text-success mx-2">{product.product_price - (product.product_price * product.discount / 100)} TL</span></h5>
                       ) : (
-                        <h5>Fiyat: {product.product_price}</h5>
+                        <h5>Fiyat: {product.product_price} TL</h5>
                       )}
                     </ListGroup.Item>
                     <ListGroup.Item>

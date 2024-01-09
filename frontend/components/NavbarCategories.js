@@ -12,7 +12,7 @@ function NavbarCategories() {
   ];
 
   return (
-    <div className="bg-light w-100" style={{ height: '75px' }}>
+    <div className="bg-light w-100" style={{ height: '60px' }}>
       <nav className="navbar navbar-expand-sm border-body d-flex flex-row align-items-center">
         <div className="container-fluid d-flex justify-content-center align-items-center">
           <button className="navbar-toggler border-0 mt-2 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#categories">
