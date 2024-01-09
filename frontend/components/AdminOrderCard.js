@@ -33,7 +33,7 @@ function OrderCard({ initialOrder }) {
 
   const handleCompleteOrder = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/orders/updateStatus/${order.id}`, {
+      const response = await fetch(`http://localhost:3001/api/orders/updateStatus/${initialOrder.id}`, {
 
         method: 'POST',
         headers: {
@@ -51,7 +51,7 @@ function OrderCard({ initialOrder }) {
 
   const fetchOrder = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/orders/${order.id}`, {
+      const response = await fetch(`http://localhost:3001/api/orders/${initialOrder.id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ function OrderCard({ initialOrder }) {
       });
       if (!response.ok) throw new Error('Order information could not be retrieved.');
       const orderData = await response.json();
-      setOrder(orderData);
+      setOrder(orderData[0]);
     } catch (error) {
       console.error('Error occurred while fetching order information:', error);
     }

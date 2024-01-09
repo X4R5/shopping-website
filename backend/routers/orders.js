@@ -11,6 +11,13 @@ router.get("/", (req, res) => {
     });
 });
 
+// GET endpoint to retrieve order by orderId
+router.get("/:id", (req, res) => {
+    const orderId = req.params.id;
+    Order.getOrderByOrderId(connection, orderId, (result) => {
+        res.json(result);
+    });
+});
 
 // POST endpoint to add a new order
 router.post("/", authenticateToken, (req, res) => {
@@ -23,7 +30,7 @@ router.post("/", authenticateToken, (req, res) => {
 });
 
 // GET endpoint to retrieve orders by userId
-router.get("/user", authenticateToken, (req, res) => {
+router.get("/c/user", authenticateToken, (req, res) => {
     const userId = req.user.id;
     Order.getOrderDetailsByOrderId(connection, userId, (result) => {
         res.json(result);

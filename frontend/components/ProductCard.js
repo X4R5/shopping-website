@@ -35,7 +35,7 @@ function ProductCard({ product }) {
       <div className="card-body d-flex flex-row justify-content-around mt-4">
         <div className="d-flex flex-column">
 
-          <Link href={`/product/${product.id}`} passHref>
+          <Link href={`/product/${product.product_id}`} passHref>
               {product.product_name}
 
           </Link>
