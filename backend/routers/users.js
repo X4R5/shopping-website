@@ -108,4 +108,20 @@ router.post("/information", authenticateToken, (req, res) => {
     });
 });
 
+// GET endpoint to get information text
+router.get("/information/get", authenticateToken, (req, res) => {
+    const isAdmin = req.user.isAdmin;
+    if(isAdmin == "TRUE"){
+        User.getInformation(connection, (result) => {
+            res.json(result);
+        });
+    }
+    else{
+        res.status(401).json({
+            status: "error",
+            message: "Unauthorized"
+        });
+    }
+});
+
 module.exports = router;

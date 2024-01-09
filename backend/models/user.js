@@ -80,6 +80,18 @@ class User {
             callback(result);
         });
     }
+
+
+    // get all information and join user name user email
+    static getInformation(connection, callback) {
+        connection.query(`SELECT information.id, information.UserId, information.text, users.name, 
+        users.email FROM information INNER JOIN users ON information.UserId = users.UserId`, 
+        (err, result) => {
+            if (err) throw err;
+            callback(result);
+        });
+        
+    }
 }
 
 module.exports = {User};
