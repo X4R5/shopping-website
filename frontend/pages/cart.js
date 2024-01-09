@@ -8,16 +8,42 @@ import { useRouter } from 'next/router';
 
 function CartPage() {
   const router = useRouter();
-  const [basketItems, setBasketItems] = useState([]);
   const [coupon, setCoupon] = useState('');
   const [isDiscountApplied, setIsDiscountApplied] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [cartItems, setCartItems] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [grandTotal, setGrandTotal] = useState(0);
+  const [finalTotal, setFinalTotal] = useState(0);
 
 
-  const total = basketItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = 29.90;
-  const grandTotal = total + shipping;
 
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    setCartItems(cart);
+    const newTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotal(newTotal);
+    setGrandTotal(newTotal + shipping);
+    setFinalTotal(isDiscountApplied ? grandTotal - (grandTotal * discountAmount / 100) : grandTotal);
+  }, []);
+
+  useEffect(() => {
+    const newTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotal(newTotal);
+    setGrandTotal(newTotal + shipping);
+    setFinalTotal(isDiscountApplied ? grandTotal - (grandTotal * discountAmount / 100) : grandTotal)
+  }, [cartItems]);
+
+  useEffect(() => {
+    const newTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotal(newTotal);
+    setGrandTotal(newTotal + shipping);
+    setFinalTotal(isDiscountApplied ? grandTotal - (grandTotal * discountAmount / 100) : grandTotal)
+  }, [isDiscountApplied]);
+
+  
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -25,115 +51,41 @@ function CartPage() {
       router.push('/login');
       return;
     }
-
-    
-  
-    const fetchBasketItems = async () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      console.log('Sepet bilgisi:', cart);
-    
-      try {
-        const updatedBasketItems = [];
-        
-        for (const cartItem of cart) {
-          const product = await fetchProductDetails(parseInt(cartItem.productId));
-          console.log("f", cartItem);
-          
-          updatedBasketItems.push({
-            ...product[0],
-            quantity: cartItem.quantity,
-            price: cartItem.price,
-          });
-        }
-    
-        setBasketItems(updatedBasketItems);
-        console.log("a", basketItems);
-        
-      } catch (error) {
-        console.error('Sepet bilgisi çekilirken hata oluştu:', error);
-      }
-    };
-
-
-    const fetchProductDetails = async (id) => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await fetch(`http://localhost:3001/api/products/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!response.ok) throw new Error('Ürün bilgisi çekilemedi.');
-        const product = await response.json();
-        console.log("c", product);
-        console.log("d", id);
-        return product;
-      } catch (error) {
-        console.error('Ürün çekilirken hata oluştu:', error);
-      }
-    };
-
-  
-    const fetchBasketItems = async () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      console.log('Sepet bilgisi:', cart);
-      
-      try {
-        const promises = cart.map(async item => fetchProductDetails(item.productId));
-        const products = await Promise.all(promises);
-  
-        const updatedBasketItems = products.map((item, index) => ({
-          ...item,
-          quantity: cart[index].quantity,
-          price: cart[index].price,
-        }));
-
-        setBasketItems(updatedBasketItems);
-        
-      } catch (error) {
-        console.error('Sepet bilgisi çekilirken hata oluştu:', error);
-      }
-    };
-
-  
-    fetchBasketItems();
-    console.log("e", basketItems.length);
   }, []);
 
 
   const handleIncrease = (id) => {
-    const newBasketItems = basketItems.map(item => {
+    const newBasketItems = cartItems.map(item => {
       if (item.id === id) {
         return { ...item, quantity: item.quantity + 1 };
       }
       return item;
     });
-    setBasketItems(newBasketItems);
+    setCartItems(newBasketItems);
     localStorage.setItem('cart', JSON.stringify(newBasketItems));
   };
 
   const handleDecrease = (id) => {
-    const newBasketItems = basketItems.map(item => {
+    const newBasketItems = cartItems.map(item => {
       if (item.id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
       }
       return item;
     });
-    setBasketItems(newBasketItems);
+    setCartItems(newBasketItems);
     localStorage.setItem('cart', JSON.stringify(newBasketItems));
   };
   
 
   const handleRemove = (id) => {
-    const newBasketItems = basketItems.filter(item => item.id !== id);
-    setBasketItems(newBasketItems);
+    const newBasketItems = cartItems.filter(item => item.id !== id);
+    setCartItems(newBasketItems);
     localStorage.setItem('cart', JSON.stringify(newBasketItems));
   };
   
 
   const clearCart = () => {
-    setBasketItems([]);
+    setCartItems([]);
     localStorage.removeItem('cart');
   };
   
@@ -143,7 +95,18 @@ function CartPage() {
     setCoupon(e.target.value);
   };
 
+  const applyDiscountToCartItems = (items, discount) => {
+    return items.map(item => {
+      return { ...item, price: item.price - (item.price * discount / 100) };
+    });
+  };
+
   const applyCoupon = async () => {
+    const isDiscountApplied = localStorage.getItem('isDiscountApplied') === 'true';
+    if (isDiscountApplied) {
+      alert('Zaten bir kupon uygulandı.');
+      return;
+    }
     try {
       const response = await fetch(`http://localhost:3001/api/orders/coupon`, {
         method: 'POST',
@@ -159,30 +122,35 @@ function CartPage() {
       }
   
       const data = await response.json();
-      setIsDiscountApplied(true);
+      localStorage.setItem('isDiscountApplied', true);
       setDiscountAmount(data[0].discount);
 
-      const newBasketItems = basketItems.map(item => {
-        return { ...item, price: item.price - (item.price * discountAmount / 100) };
+      setCartItems(prevItems => {
+        const newItems = applyDiscountToCartItems(prevItems, data[0].discount);
+        localStorage.setItem('cart', JSON.stringify(newItems));
+        return newItems;
       });
 
-      setBasketItems(newBasketItems);
-      localStorage.setItem('cart', JSON.stringify(newBasketItems));
+      const newTotal = newBasketItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      setTotal(newTotal);
+      const newGrandTotal = total + shipping;
+      setGrandTotal(newGrandTotal);
+      const newFinalTotal = grandTotal - (grandTotal * discountAmount / 100);
+      setFinalTotal(newFinalTotal);
 
       alert("Kupon başarıyla uygulandı!");
+      setIsDiscountApplied(true);
   
     } catch (error) {
       console.error('Kupon uygulanırken hata oluştu:', error);
       alert(error.message);
     }
   };
-  
-  const handleRedirectCompleteOrder = () => {
+
+  const handleCompleteOrderRedirect = () => {
     router.push('/completeorder');
-  }
+  };
 
-
-  const finalTotal = isDiscountApplied ? grandTotal - (grandTotal * discountAmount / 100) : grandTotal;
 
 
   return (
@@ -190,16 +158,16 @@ function CartPage() {
       <Navbar />
       <div className="container mt-3">
         <div className="my-2 d-flex justify-content-between align-items-center">
-          <h2>Sepetim ({basketItems.length} ürün)</h2>
+          <h2>Sepetim ({cartItems.length} ürün)</h2>
             <button className="btn btn-outline-danger" onClick={clearCart}>Sepeti Boşalt</button>
         </div>
         {
-          basketItems.length > 0 ? (
+          cartItems.length > 0 ? (
             <>
-              {basketItems.map((item, index) => (
+              {cartItems.map((item, index) => (
                 <div key={index}>
                 <CartItem 
-                  item={item[0]} 
+                  item={JSON.parse(localStorage.getItem('product' + item.product_id))} 
                   quantity={item.quantity}
                   price={item.price}
                   onIncrease={handleIncrease} 
@@ -249,9 +217,9 @@ function CartPage() {
               <input type="text" value={coupon} onChange={handleCouponChange} placeholder="Kupon Kodu" className="form-control" />
               <button className="btn btn-success mt-2" onClick={applyCoupon}>Kupon Uygula</button>
             </div>
-
           
-            <button onClick={handleRedirectCompleteOrder} className="btn btn-orange">Satın Al</button>
+            <button className="btn btn-orange" onClick={handleCompleteOrderRedirect}>Satın Al</button>
+          
 
           </div>
         </div>

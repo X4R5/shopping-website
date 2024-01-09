@@ -41,7 +41,7 @@ class Order{
             // add order items
             ProductList.forEach(product => {
                 connection.query(`INSERT INTO orderdetails (orderId, productId, quantity) 
-                    VALUES (?,?,?)`, [newOrderId, product[0].product_id, product.quantity], (err, result) => {
+                    VALUES (?,?,?)`, [newOrderId, product.product_id, product.quantity], (err, result) => {
                     if(err) throw err;
                 });
             });

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 
 function OrderCompletionPage() {
   const router = useRouter();
-  const [basketItems, setBasketItems] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
 
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
@@ -13,8 +13,15 @@ function OrderCompletionPage() {
   const [deliveryOption, setDeliveryOption] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
+  const[grandTotal, setGrandTotal] = useState(0);
+
+  const [products, setProducts] = useState([]);
+
+  const additionalProducts = cartItems.length > 2 ? cartItems.length - 2 : 0;
   const shipping = 29.90;
 
+  
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -22,57 +29,44 @@ function OrderCompletionPage() {
       router.push('/login');
       return;
     }
-    const fetchProductDetails = async (id) => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await fetch(`http://localhost:3001/api/products/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!response.ok) throw new Error('Ürün bilgisi çekilemedi.');
-        const product = await response.json();
-        console.log(product);
-        return product;
-      } catch (error) {
-        console.error('Ürün çekilirken hata oluştu:', error);
-      }
-    };
   
-    const fetchBasketItems = async () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      console.log('Sepet bilgisi:', cart);
-      
-      try {
-        const promises = cart.map(async item => fetchProductDetails(item.productId));
-        const products = await Promise.all(promises);
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    setCartItems(cart);
   
-        const updatedBasketItems = products.map((item, index) => ({
-          ...item,
-          quantity: cart[index].quantity,
-          price: cart[index].price,
-        }));
-
-        setBasketItems(updatedBasketItems);
-        
-      } catch (error) {
-        console.error('Sepet bilgisi çekilirken hata oluştu:', error);
-      }
-    };
-  
-    fetchBasketItems();
+    const newTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setGrandTotal(newTotal + shipping);
   }, []);
+  
+  useEffect(() => {
+    const fproducts = cartItems.map(item => {
+      const productData = JSON.parse(localStorage.getItem('product' + item.product_id));
+      console.log(productData);
+      return {
+        product_id: item.product_id,
+        product_name: productData ? productData.product_name : 'Ürün adı bulunamadı',
+        product_image: productData ? productData.product_image : 'Varsayılan resim yolu',
+        quantity: item.quantity
+      };
+    });
+  
+    setProducts(fproducts);
+  }, [cartItems]);
+  
 
   const handlePurchase = async () => {
     const token = localStorage.getItem('token');
-  
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    
+    
     const orderDetails = {
-      ProductList: basketItems,
+      ProductList: cart,
       address: city+' '+district+' '+address,
       deliveryOption,
       paymentMethod,
     };
+
+    console.log(orderDetails);
   
     try {
       const response = await fetch('http://localhost:3001/api/orders', {
@@ -98,9 +92,7 @@ function OrderCompletionPage() {
   };
   
 
-  const additionalProducts = basketItems.length > 2 ? basketItems.length - 2 : 0;
-  const totalPrice = basketItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const grandTotal = totalPrice + shipping;
+  
 
   return (
     <div>
@@ -108,8 +100,8 @@ function OrderCompletionPage() {
     <div className="container mt-4">
       <div className="d-flex align-items-center mb-5">
 
-        {basketItems.slice(0, 2).map((item, index) => (
-          <img key={item[0].product_id} src={item[0].product_image} alt={item[0].product_name} className="rounded-circle"
+        {cartItems.slice(0, 2).map((item, index) => (
+          <img key={products.product_id} src={products.product_image} alt={products.product_name} className="rounded-circle"
                style={{
                  width: '60px', height: '60px', objectFit: 'cover',
                  position: 'relative',
@@ -125,7 +117,7 @@ function OrderCompletionPage() {
                  width: '60px', height: '60px',
                  marginLeft: '-30px',
                  color: 'white',
-                 zIndex: basketItems.length + 1,
+                 zIndex: cartItems.length + 1,
                  border: '2px solid white'
                }}>
             +{additionalProducts}
