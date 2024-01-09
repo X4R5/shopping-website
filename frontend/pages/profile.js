@@ -17,7 +17,7 @@ function ProfilePage() {
     
         const fetchUserInfo = async () => {
           try {
-            const response = await fetch('http://localhost:3001/api/users/c/user', {
+            const response = await fetch('http://localhost:3001/api/users/user', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
@@ -25,8 +25,7 @@ function ProfilePage() {
             if (!response.ok) throw new Error('Kullanıcı bilgileri çekilemedi.');
             const data = await response.json();
             setUserInfo(data[0]);
-            console.log(data)
-            console.log(token)
+            console.log(data[0])
           } catch (error) {
             console.error('Kullanıcı bilgileri çekilirken hata oluştu:', error);
           }
@@ -51,7 +50,7 @@ function ProfilePage() {
       
         const fetchOrders = async () => {
           try {
-            const response = await fetch('http://localhost:3001/api/orders/c/user', {
+            const response = await fetch('http://localhost:3001/api/orders/user', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
@@ -130,14 +129,11 @@ function ProfilePage() {
       
     
     
-      const getInitials = (name) => {
-        return `${name}`;
-      };
-    
-      const renderProfilePicture = () => {
+      const renderInitials = (name) => {
+        let initials = name.split(' ').map((n) => n[0]).join('');
         return (
-          <div className="profile-picture bg-primary rounded-circle text-white d-flex justify-content-center align-items-center" style={{ width: '80px', height: '80px', fontSize: '2em' }}>
-            {getInitials(userInfo.name)}
+          <div className="initials-placeholder" style={{ background: 'blue', color: 'white', borderRadius: '50%', textAlign: 'center', lineHeight: '40px', height: '40px', width: '40px' }}>
+            {initials}
           </div>
         );
       };
@@ -148,8 +144,8 @@ function ProfilePage() {
       <div className="container mt-4">
       <div className="row">
             <div className="col-md-3">
-            <div className='d-flex justify-content-center align-items-center'>{renderProfilePicture()}</div>
-            <div className="d-flex justify-content-center align-items-center mt-3">{userInfo.firstName} {userInfo.lastName}</div>
+            <div className='d-flex justify-content-center align-items-center'>{renderInitials(userInfo.name)}</div>
+            <div className="d-flex justify-content-center align-items-center mt-3">{userInfo.name}</div>
 
             <div className="d-flex justify-content-center align-items-center mt-3">
             <ul className="nav flex-column mt-3">

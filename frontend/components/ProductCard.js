@@ -4,7 +4,7 @@ import Link from 'next/link';
 function ProductCard({ product }) {
 
   let displayPrice;
-  if (product.campaign) {
+  if (product.campaign === 1) {
     const discountAmount = product.product_price * (product.discount / 100);
     const discountedPrice = product.product_price - discountAmount;
     displayPrice = (

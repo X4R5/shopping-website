@@ -19,7 +19,7 @@ function NavbarCategories() {
             Kategoriler
           </button>
           <div className="collapse navbar-collapse mx-5" id="categories">
-            <ul className="navbar-nav horizontal-list d-flex justify-content-center">
+            <ul className="navbar-nav horizontal-list d-flex justify-content-center align-items-center">
               {categories.map((category) => (
                 <li className="nav-item list-group-item" key={category.id}>
                   <Link
@@ -27,7 +27,10 @@ function NavbarCategories() {
                     href={`/category/${category.id}`}
                     passHref
                     legacyBehavior>
-                      {category.name}
+                      <div style={{ color: '#333', textDecoration: 'none' }}>
+                        {category.name}
+                      </div>
+                      
                   </Link>
                 </li>
               ))}

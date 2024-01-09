@@ -50,9 +50,11 @@ function Navbar() {
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
 
-          <Link href="/" className="navbar-brand">
-            hepsiburada
-          </Link>
+        <Link href="/">
+        <div style={{ color: 'orange' }}>
+          hepsiburada
+        </div>
+      </Link>
 
 
 
@@ -61,26 +63,26 @@ function Navbar() {
           </button>
           <div className="collapse navbar-collapse" id="mynavbar">
             <div className="ml-auto">
-            {isLoggedIn ? (
-              <>
-              
-              {isAdmin && (
-                <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleAdminPanelRedirect}>Admin Panel</button>
-              )}
+              {isLoggedIn ? (
+                <>
+                
+                {isAdmin && (
+                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleAdminPanelRedirect}>Admin Panel</button>
+                )}
 
 
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleContactRedirect}>İletişim</button>
+                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleContactRedirect}>İletişim</button>
 
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleCartRedirect}>Sepet</button>
+                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleCartRedirect}>Sepet</button>
 
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleProfileRedirect}>Profilim</button>
+                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleProfileRedirect}>Profilim</button>
 
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleLogout}>Çıkış Yap</button>
-                  
-              </>
-              ) : (
-                  <button type="button" className="btn btn-secondary py-2 py-lg-3" onClick={handleLoginRedirect}>Giriş Yap</button>
-              )}
+                    <button type="button" className="btn btn-secondary py-2 py-lg-3 mx-1" onClick={handleLogout}>Çıkış Yap</button>
+                    
+                </>
+                ) : (
+                    <button type="button" className="btn btn-secondary py-2 py-lg-3" onClick={handleLoginRedirect}>Giriş Yap</button>
+                )}
 
             </div>
           </div>

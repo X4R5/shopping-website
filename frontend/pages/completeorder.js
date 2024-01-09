@@ -81,17 +81,26 @@ function OrderCompletionPage() {
       if (!response.ok) throw new Error('Sipariş oluşturulamadı.');
 
       localStorage.removeItem('cart');
+      localStorage.removeItem('isDiscountApplied');
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('product')) {
+          localStorage.removeItem(key);
+        }
+      }
+      
 
       const result = await response.json();
       console.log('Sipariş başarıyla oluşturuldu:', result);
-      alert("Sipariş başarıyla tamamlandı!");
+      alert("Sipariş başarıyla tamamlandı! Profil sayfasına yönlendiriliyorsunuz.");
+      setTimeout(function(){
+        router.push('/profile');
+      }, 1000);
     } catch (error) {
       console.error('Sipariş oluşturma sırasında hata oluştu:', error);
       alert("Sipariş oluşturma sırasında bir hata oluştu.");
     }
   };
-  
-
   
 
   return (

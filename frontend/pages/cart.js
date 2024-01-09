@@ -131,7 +131,7 @@ function CartPage() {
         return newItems;
       });
 
-      const newTotal = newBasketItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      const newTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
       setTotal(newTotal);
       const newGrandTotal = total + shipping;
       setGrandTotal(newGrandTotal);
