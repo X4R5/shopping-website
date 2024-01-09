@@ -24,7 +24,7 @@ router.get("/:id", (req, res) => {
 });
 
 // GET endpoint to retrieve user by id
-router.get("/user", authenticateToken, (req, res) => {
+router.get("/c/user", authenticateToken, (req, res) => {
     const id = req.user.id;
     User.getUserById(connection, id, (result) => {
         res.json(result);

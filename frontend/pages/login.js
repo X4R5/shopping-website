@@ -30,7 +30,7 @@ function LoginPage() {
           localStorage.setItem('isAdmin', true);
         }
 
-        setLoginStatus('Kayıt başarılı, anasayfaya yönlendiriliyorsunuz.');
+        setLoginStatus('Giriş başarılı, anasayfaya yönlendiriliyorsunuz.');
 
         setTimeout(() => {
           window.location.href = '/';

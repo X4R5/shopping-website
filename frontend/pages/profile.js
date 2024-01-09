@@ -17,7 +17,7 @@ function ProfilePage() {
     
         const fetchUserInfo = async () => {
           try {
-            const response = await fetch('http://localhost:3001/api/users/user', {
+            const response = await fetch('http://localhost:3001/api/users/c/user', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
@@ -25,7 +25,8 @@ function ProfilePage() {
             if (!response.ok) throw new Error('Kullanıcı bilgileri çekilemedi.');
             const data = await response.json();
             setUserInfo(data[0]);
-            console.log(data[0])
+            console.log(data)
+            console.log(token)
           } catch (error) {
             console.error('Kullanıcı bilgileri çekilirken hata oluştu:', error);
           }
@@ -50,7 +51,7 @@ function ProfilePage() {
       
         const fetchOrders = async () => {
           try {
-            const response = await fetch('http://localhost:3001/api/orders/user', {
+            const response = await fetch('http://localhost:3001/api/orders/c/user', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },

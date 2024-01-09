@@ -157,8 +157,8 @@ function OrderCompletionPage() {
               <label className="form-check-label" htmlFor="deliveryDoor">Adrese Teslim</label>
             </div>
             <div className="form-check">
-              <input type="radio" id="pickupStore" name="deliveryOption" value="Mağazadan Teslim" className="form-check-input"
-                     checked={deliveryOption === 'Mağazadan Teslim'} onChange={(e) => setDeliveryOption(e.target.value)} />
+              <input type="radio" id="pickupStore" name="deliveryOption" value="Magazadan Teslim" className="form-check-input"
+                     checked={deliveryOption === 'Magazadan Teslim'} onChange={(e) => setDeliveryOption(e.target.value)} />
               <label className="form-check-label" htmlFor="pickupStore">Mağazadan Teslim</label>
             </div>
           </div>
@@ -166,13 +166,13 @@ function OrderCompletionPage() {
           <h3>Ödeme Yöntemi</h3>
           <div className="mb-3">
             <div className="form-check">
-              <input type="radio" id="paymentOnline" name="paymentMethod" value="Online Kredi Kartı" className="form-check-input"
-                     checked={paymentMethod === 'Online Kredi Kartı'} onChange={(e) => setPaymentMethod(e.target.value)} />
+              <input type="radio" id="paymentOnline" name="paymentMethod" value="Online Kredi Karti" className="form-check-input"
+                     checked={paymentMethod === 'Online Kredi Karti'} onChange={(e) => setPaymentMethod(e.target.value)} />
               <label className="form-check-label" htmlFor="paymentOnline">Online Kredi Kartı</label>
             </div>
             <div className="form-check">
-              <input type="radio" id="paymentOnDelivery" name="paymentMethod" value="Kapıda Ödeme" className="form-check-input"
-                     checked={paymentMethod === 'Kapıda Ödeme'} onChange={(e) => setPaymentMethod(e.target.value)} />
+              <input type="radio" id="paymentOnDelivery" name="paymentMethod" value="Kapida Ödeme" className="form-check-input"
+                     checked={paymentMethod === 'Kapida Ödeme'} onChange={(e) => setPaymentMethod(e.target.value)} />
               <label className="form-check-label" htmlFor="paymentOnDelivery">Kapıda Ödeme</label>
             </div>
           </div>
