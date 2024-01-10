@@ -56,7 +56,7 @@ function CartPage() {
 
   const handleIncrease = (id) => {
     const newBasketItems = cartItems.map(item => {
-      if (item.id === id) {
+      if (item.product_id === id) {
         return { ...item, quantity: item.quantity + 1 };
       }
       return item;
@@ -67,7 +67,7 @@ function CartPage() {
 
   const handleDecrease = (id) => {
     const newBasketItems = cartItems.map(item => {
-      if (item.id === id && item.quantity > 1) {
+      if (item.product_id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
       }
       return item;
@@ -78,7 +78,7 @@ function CartPage() {
   
 
   const handleRemove = (id) => {
-    const newBasketItems = cartItems.filter(item => item.id !== id);
+    const newBasketItems = cartItems.filter(item => item.product_id !== id);
     setCartItems(newBasketItems);
     localStorage.setItem('cart', JSON.stringify(newBasketItems));
   };
@@ -150,7 +150,6 @@ function CartPage() {
   const handleCompleteOrderRedirect = () => {
     router.push('/completeorder');
   };
-
 
 
   return (
